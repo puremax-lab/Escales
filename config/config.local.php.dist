@@ -1,0 +1,11 @@
+<?php
+
+// Copy this file to config.local.php and adapt it. config.local.php is not committed.
+return [
+    'debug' => true,
+    'db' => [
+        'dsn' => 'mysql:host=127.0.0.1;port=3306;dbname=escales;charset=utf8mb4',
+        'user' => 'root',
+        'password' => '',
+    ],
+];

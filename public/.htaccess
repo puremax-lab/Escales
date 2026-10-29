@@ -1,0 +1,4 @@
+# Send every request that is not an existing file to index.php
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [QSA,L]
