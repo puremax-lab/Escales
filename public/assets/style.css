@@ -67,6 +67,10 @@ input, select, textarea, button { font: inherit; color: inherit; }
 }
 .avatar-large { width: 84px; height: 84px; font-size: 2rem; flex-shrink: 0; }
 .footer { border-top: 1px solid var(--border); padding: 1.5rem 0; color: var(--muted); font-size: 0.875rem; text-align: center; }
+.footer p { margin: 0 0 0.5rem; }
+.footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem 1.25rem; }
+.footer-links a { color: var(--muted); }
+.footer-links a:hover { color: var(--primary); }
 
 /* ===== Buttons ===== */
 .btn {

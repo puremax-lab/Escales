@@ -47,7 +47,14 @@ $active = fn (string $prefix) => ($prefix === '/' ? $currentPath === '/' : str_s
 </main>
 
 <footer class="footer">
-    <div class="container">Escales · projet PHP sans framework · les données sont fictives</div>
+    <div class="container footer-inner">
+        <p>Escales · projet portfolio de puremax-lab · les données sont fictives</p>
+        <nav class="footer-links" aria-label="Liens du pied de page">
+            <a href="https://github.com/puremax-lab/Escales" target="_blank" rel="noopener">Code source</a>
+            <a href="https://github.com/puremax-lab" target="_blank" rel="noopener">GitHub puremax-lab</a>
+            <span>© <?= date('Y') ?></span>
+        </nav>
+    </div>
 </footer>
 </body>
 </html>

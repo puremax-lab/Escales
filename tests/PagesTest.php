@@ -13,6 +13,14 @@ final class PagesTest extends AppTestCase
         $this->assertStringContainsString('Lisbonne', $response->body);
     }
 
+    public function testFooterLinksToTheSourceCode(): void
+    {
+        $response = $this->get('/');
+
+        $this->assertStringContainsString('href="https://github.com/puremax-lab/Escales"', $response->body);
+        $this->assertStringContainsString('href="https://github.com/puremax-lab"', $response->body);
+    }
+
     public function testSearchesCitiesByCityOrCountryName(): void
     {
         $byCity = $this->get('/villes?q=lisb')->body;

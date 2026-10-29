@@ -1,4 +1,4 @@
-# ✈ Escales
+# Escales
 
 **A travel journal web app written in plain PHP, with no framework.**
 *Carnet de voyage partagé, développé en PHP natif, sans framework.*
@@ -6,7 +6,7 @@
 ![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white)
 ![No framework](https://img.shields.io/badge/framework-none-0e7c86)
-![Tests](https://img.shields.io/badge/tests-47_passing-2ea44f)
+[![Tests](https://github.com/puremax-lab/Escales/actions/workflows/tests.yml/badge.svg)](https://github.com/puremax-lab/Escales/actions/workflows/tests.yml)
 
 ![Home page](docs/screenshots/home.png)
 
