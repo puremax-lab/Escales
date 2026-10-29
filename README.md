@@ -51,8 +51,8 @@ Members sign up, note the cities they have visited (date, rating out of 5, revie
 - **Composer** for PSR-4 autoloading and PHPUnit only: no runtime dependency.
 
 **Security**
-- **SQL injection**: every query uses PDO prepared statements.
-- **XSS**: every value printed in a template is escaped with `e()` (`htmlspecialchars`).
+- **SQL injection**: every query that contains user input is a PDO prepared statement (the others are fixed SQL with no variables).
+- **XSS**: all text coming from users or the database is escaped with `e()` (`htmlspecialchars`) before being printed.
 - **CSRF**: a token per session, checked on every POST.
 - **Passwords**: hashed with `password_hash`, re-hashed when PHP's algorithm changes, never stored in the session.
 - **Login**: session id regenerated after login, generic error message, and a **login throttle** stored in the database (5 failures in 15 minutes for the same pseudo and IP address).
@@ -72,7 +72,7 @@ Members sign up, note the cities they have visited (date, rating out of 5, revie
 | | |
 |---|---|
 | Language | PHP 8.3+ (no framework) |
-| Database | MySQL / MariaDB, or SQLite |
+| Database | MySQL or SQLite |
 | Front end | HTML and CSS, no library, no JavaScript |
 | Tests | PHPUnit 12 |
 | CI | GitHub Actions |
@@ -125,7 +125,7 @@ erDiagram
 
 ## Run it locally
 
-**Requirements:** PHP 8.3+ with `pdo_sqlite` or `pdo_mysql`, and [Composer](https://getcomposer.org).
+**Requirements:** PHP 8.3+ with the `mbstring` extension and `pdo_sqlite` or `pdo_mysql`, and [Composer](https://getcomposer.org).
 
 **Quick start with SQLite (no database server needed):**
 
