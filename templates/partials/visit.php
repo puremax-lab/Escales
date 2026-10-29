@@ -1,7 +1,7 @@
 <?php
 /**
  * One journal entry.
- * @var array $visit @var bool $showAuthor @var bool $showCity @var bool $editable @var string $csrfToken
+ * @var array $visit @var bool $showAuthor @var bool $showCity @var bool $editable
  */
 ?>
 <article class="visit">
@@ -27,10 +27,7 @@
         <?php if (!empty($editable)): ?>
             <div class="visit-actions">
                 <a href="/carnet/<?= $visit['id'] ?>/modifier" class="btn btn-ghost btn-small">Modifier</a>
-                <form method="post" action="/carnet/<?= $visit['id'] ?>/supprimer" onsubmit="return confirm('Retirer <?= e(addslashes($visit['city'])) ?> de votre carnet ?')">
-                    <input type="hidden" name="_token" value="<?= e($csrfToken) ?>">
-                    <button type="submit" class="btn btn-ghost btn-small btn-danger">Supprimer</button>
-                </form>
+                <a href="/carnet/<?= $visit['id'] ?>/supprimer" class="btn btn-ghost btn-small btn-danger">Supprimer</a>
             </div>
         <?php endif ?>
     </div>

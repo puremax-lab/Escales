@@ -79,15 +79,21 @@ final class JournalTest extends AppTestCase
 
         $this->assertSame(404, $this->get("/carnet/$malikVisit/modifier")->status);
         $this->assertSame(404, $this->post("/carnet/$malikVisit/modifier", $this->visit())->status);
+        $this->assertSame(404, $this->get("/carnet/$malikVisit/supprimer")->status);
         $this->assertSame(404, $this->post("/carnet/$malikVisit/supprimer")->status);
         $this->assertSame(1, $this->countRows('SELECT COUNT(*) FROM visits WHERE id = 2'));
     }
 
-    public function testDeletingIsOnlyPossibleWithPost(): void
+    public function testAsksForConfirmationBeforeDeleting(): void
     {
         $this->loginAs('camille');
 
-        $this->assertSame(405, $this->get('/carnet/1/supprimer')->status);
+        $page = $this->get('/carnet/1/supprimer');
+
+        $this->assertSame(200, $page->status);
+        $this->assertStringContainsString('Retirer Rome de votre carnet ?', $page->body);
+        $this->assertStringContainsString('<form method="post" action="/carnet/1/supprimer"', $page->body);
+        $this->assertSame(1, $this->countRows('SELECT COUNT(*) FROM visits WHERE id = 1'), 'opening the page deletes nothing');
     }
 
     public function testUpdatesTheProfile(): void

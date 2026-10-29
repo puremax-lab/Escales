@@ -104,7 +104,8 @@ final class App
         $r->post('/carnet/ajouter', fn () => $journal()->store($this->cities, $this->visits));
         $r->get('/carnet/{id}/modifier', fn (string $id) => $journal()->edit((int) $id, $this->cities, $this->visits));
         $r->post('/carnet/{id}/modifier', fn (string $id) => $journal()->update((int) $id, $this->cities, $this->visits));
-        $r->post('/carnet/{id}/supprimer', fn (string $id) => $journal()->delete((int) $id, $this->visits));
+        $r->get('/carnet/{id}/supprimer', fn (string $id) => $journal()->confirmDelete((int) $id, $this->visits));
+        $r->post('/carnet/{id}/supprimer',fn (string $id) => $journal()->delete((int) $id, $this->visits));
 
         $r->get('/profil/modifier', fn () => $member()->edit($this->cities));
         $r->post('/profil/modifier', fn () => $member()->update($this->users, $this->cities));

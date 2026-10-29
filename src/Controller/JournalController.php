@@ -60,6 +60,14 @@ final class JournalController extends Controller
         return $this->redirect('/carnet', 'Escale modifiée.');
     }
 
+    /** Confirmation page: deleting needs a second click on a POST form. */
+    public function confirmDelete(int $id, VisitRepository $visits): Response
+    {
+        $visit = $this->ownVisit($id, $visits);
+
+        return $this->render('pages/journal/delete', ['title' => 'Retirer une escale', 'visit' => $visit]);
+    }
+
     public function delete(int $id, VisitRepository $visits): Response
     {
         $visit = $this->ownVisit($id, $visits);

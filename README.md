@@ -73,7 +73,7 @@ Members sign up, note the cities they have visited (date, rating out of 5, revie
 |---|---|
 | Language | PHP 8.3+ (no framework) |
 | Database | MySQL / MariaDB, or SQLite |
-| Front end | HTML and CSS, no library. JavaScript only for the delete confirmation |
+| Front end | HTML and CSS, no library, no JavaScript |
 | Tests | PHPUnit 12 |
 | CI | GitHub Actions |
 
