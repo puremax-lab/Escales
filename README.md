@@ -19,7 +19,7 @@ Members sign up, note the cities they have visited (date, rating out of 5, revie
 | **What it does** | Visitors search cities and read reviews. Members keep a journal of the cities they have visited, with a public profile page |
 | **What it shows** | PHP fundamentals without a framework: a router, an MVC structure, PDO, sessions, server-side validation and web security |
 | **Why no framework** | To show that I understand what a framework like Symfony does for you (see [RecetteVie](https://github.com/puremax-lab/RecetteVie), my Symfony project) |
-| **Status** | Works with MySQL or SQLite, responsive on phones and desktops, covered by automated tests |
+| **Status** | Tested with MySQL and SQLite, responsive on phones and desktops, covered by automated tests |
 
 ## Features
 
@@ -55,7 +55,7 @@ Members sign up, note the cities they have visited (date, rating out of 5, revie
 - **XSS**: every value printed in a template is escaped with `e()` (`htmlspecialchars`).
 - **CSRF**: a token per session, checked on every POST.
 - **Passwords**: hashed with `password_hash`, re-hashed when PHP's algorithm changes, never stored in the session.
-- **Login**: session id regenerated after login, generic error message, and a **login throttle** stored in the database (5 failures in 15 minutes).
+- **Login**: session id regenerated after login, generic error message, and a **login throttle** stored in the database (5 failures in 15 minutes for the same pseudo and IP address).
 - **Access control**: a member can only edit or delete their own entries; others get a 404.
 - Session cookies `HttpOnly` and `SameSite=Lax`, and security headers (`X-Frame-Options`, `X-Content-Type-Options`).
 
@@ -64,7 +64,7 @@ Members sign up, note the cities they have visited (date, rating out of 5, revie
 - **Database constraints**: foreign keys, unique keys (one entry per city per member), a `CHECK` on the rating, and journal entries deleted with their member.
 
 **Quality**
-- **47 PHPUnit tests**: unit tests for the router, validator and CSRF, and functional tests that send real requests through the whole app (sign-up, login, throttle, journal, permissions, escaping).
+- **PHPUnit tests**: unit tests for the router, validator and CSRF, and functional tests that send real requests through the whole app (sign-up, login, throttle, journal, permissions, escaping).
 - **GitHub Actions** runs the tests on PHP 8.3 and 8.4 at every push.
 
 ## Tech stack
@@ -73,7 +73,7 @@ Members sign up, note the cities they have visited (date, rating out of 5, revie
 |---|---|
 | Language | PHP 8.3+ (no framework) |
 | Database | MySQL / MariaDB, or SQLite |
-| Front end | HTML, CSS (no library), no JavaScript needed |
+| Front end | HTML and CSS, no library. JavaScript only for the delete confirmation |
 | Tests | PHPUnit 12 |
 | CI | GitHub Actions |
 
