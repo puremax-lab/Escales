@@ -20,7 +20,7 @@ final class Response
     /** 303 so the browser follows with a GET after a form submission. */
     public static function redirect(string $location): self
     {
-        return new self('', 303, ['Location' => $location]);
+        return new self('', 303, ['Location' => url($location)]);
     }
 
     public function send(): void

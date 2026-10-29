@@ -6,6 +6,12 @@ function e(string|int|float|null $value): string
     return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+/** App path with the folder the site is served from: url('/villes') gives '/escales/villes' online. */
+function url(string $path): string
+{
+    return App\Core\Request::$basePath . $path;
+}
+
 /** French date such as "12 mars 2026", without depending on the intl extension. */
 function format_date(string $isoDate): string
 {

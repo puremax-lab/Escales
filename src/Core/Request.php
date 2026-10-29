@@ -5,6 +5,9 @@ namespace App\Core;
 /** The incoming HTTP request, built from the PHP superglobals or by hand in tests. */
 final class Request
 {
+    /** Folder the site is served from, such as '/escales' ('' at the root of a domain). */
+    public static string $basePath = '';
+
     public function __construct(
         public readonly string $method,
         public readonly string $uri,
@@ -16,9 +19,15 @@ final class Request
 
     public static function fromGlobals(): self
     {
+        self::$basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/');
+        $uri = $_SERVER['REQUEST_URI'] ?? '/';
+        if (self::$basePath !== '' && preg_match('#^' . preg_quote(self::$basePath, '#') . '(?=/|\?|$)#', $uri)) {
+            $uri = substr($uri, strlen(self::$basePath)) ?: '/';
+        }
+
         return new self(
             strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET'),
-            $_SERVER['REQUEST_URI'] ?? '/',
+            $uri,
             $_GET,
             $_POST,
             $_SERVER['REMOTE_ADDR'] ?? '',

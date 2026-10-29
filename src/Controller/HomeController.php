@@ -18,4 +18,9 @@ final class HomeController extends Controller
             'latestVisits' => $visits->latest(4),
         ]);
     }
+
+    public function legal(): Response
+    {
+        return $this->render('pages/legal', ['title' => 'Mentions légales']);
+    }
 }

@@ -9,33 +9,33 @@ $active = fn (string $prefix) => ($prefix === '/' ? $currentPath === '/' : str_s
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($title) ?> · Escales</title>
     <meta name="description" content="Escales, le carnet de voyage partagé : notez les villes que vous avez visitées et découvrez celles des autres voyageurs.">
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="icon" href="<?= e(url('/assets/favicon.svg')) ?>" type="image/svg+xml">
+    <link rel="stylesheet" href="<?= e(url('/assets/style.css')) ?>">
 </head>
 <body>
 <header class="topbar">
     <div class="container topbar-inner">
-        <a href="/" class="brand"><span class="brand-mark" aria-hidden="true">✈</span> Escales</a>
+        <a href="<?= e(url('/')) ?>" class="brand"><span class="brand-mark" aria-hidden="true">✈</span> Escales</a>
         <nav class="nav" aria-label="Navigation principale">
-            <a href="/"<?= $active('/') ?>>Accueil</a>
-            <a href="/villes"<?= $active('/villes') ?>>Villes</a>
+            <a href="<?= e(url('/')) ?>"<?= $active('/') ?>>Accueil</a>
+            <a href="<?= e(url('/villes')) ?>"<?= $active('/villes') ?>>Villes</a>
             <?php if ($currentUser): ?>
-                <a href="/carnet"<?= $active('/carnet') ?>>Mon carnet</a>
+                <a href="<?= e(url('/carnet')) ?>"<?= $active('/carnet') ?>>Mon carnet</a>
             <?php endif ?>
         </nav>
         <div class="account">
             <?php if ($currentUser): ?>
-                <a href="/membres/<?= e(rawurlencode($currentUser['pseudo'])) ?>" class="account-name">
+                <a href="<?= e(url('/membres/')) ?><?= e(rawurlencode($currentUser['pseudo'])) ?>" class="account-name">
                     <span class="avatar" aria-hidden="true"><?= e(mb_strtoupper(mb_substr($currentUser['first_name'], 0, 1))) ?></span>
                     <span class="hide-mobile"><?= e($currentUser['pseudo']) ?></span>
                 </a>
-                <form method="post" action="/deconnexion">
+                <form method="post" action="<?= e(url('/deconnexion')) ?>">
                     <input type="hidden" name="_token" value="<?= e($csrfToken) ?>">
                     <button type="submit" class="btn btn-ghost btn-small">Déconnexion</button>
                 </form>
             <?php else: ?>
-                <a href="/connexion" class="btn btn-ghost btn-small">Connexion</a>
-                <a href="/inscription" class="btn btn-small">Inscription</a>
+                <a href="<?= e(url('/connexion')) ?>" class="btn btn-ghost btn-small">Connexion</a>
+                <a href="<?= e(url('/inscription')) ?>" class="btn btn-small">Inscription</a>
             <?php endif ?>
         </div>
     </div>
@@ -52,6 +52,7 @@ $active = fn (string $prefix) => ($prefix === '/' ? $currentPath === '/' : str_s
         <nav class="footer-links" aria-label="Liens du pied de page">
             <a href="https://github.com/puremax-lab/Escales" target="_blank" rel="noopener">Code source</a>
             <a href="https://github.com/puremax-lab" target="_blank" rel="noopener">GitHub puremax-lab</a>
+            <a href="<?= e(url('/mentions-legales')) ?>">Mentions légales</a>
             <span>© <?= date('Y') ?></span>
         </nav>
     </div>

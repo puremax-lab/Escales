@@ -5,7 +5,7 @@ $value = fn (string $field) => e(is_string($old[$field] ?? null) ? $old[$field] 
     <h1>Créer mon carnet</h1>
     <p class="muted">Gratuit, en moins d'une minute.</p>
 
-    <form method="post" action="/inscription" class="card form" novalidate>
+    <form method="post" action="<?= e(url('/inscription')) ?>" class="card form" novalidate>
         <input type="hidden" name="_token" value="<?= e($csrfToken) ?>">
 
         <div class="field-row">
@@ -62,5 +62,5 @@ $value = fn (string $field) => e(is_string($old[$field] ?? null) ? $old[$field] 
 
         <button type="submit" class="btn btn-block">Créer mon compte</button>
     </form>
-    <p class="center">Déjà inscrit ? <a href="/connexion">Connectez-vous</a></p>
+    <p class="center">Déjà inscrit ? <a href="<?= e(url('/connexion')) ?>">Connectez-vous</a></p>
 </div>

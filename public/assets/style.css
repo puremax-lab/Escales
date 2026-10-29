@@ -71,6 +71,8 @@ input, select, textarea, button { font: inherit; color: inherit; }
 .footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem 1.25rem; }
 .footer-links a { color: var(--muted); }
 .footer-links a:hover { color: var(--primary); }
+.legal { max-width: 46rem; }
+.legal h2 { font-size: 1.1rem; margin-top: 1.75rem; }
 
 /* ===== Buttons ===== */
 .btn {

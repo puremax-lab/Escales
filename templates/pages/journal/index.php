@@ -4,10 +4,10 @@
         <h1>Mon carnet</h1>
         <p class="muted">
             Votre page publique :
-            <a href="/membres/<?= e(rawurlencode($currentUser['pseudo'])) ?>">/membres/<?= e($currentUser['pseudo']) ?></a>
+            <a href="<?= e(url('/membres/')) ?><?= e(rawurlencode($currentUser['pseudo'])) ?>">/membres/<?= e($currentUser['pseudo']) ?></a>
         </p>
     </div>
-    <a href="/carnet/ajouter" class="btn">+ Ajouter une escale</a>
+    <a href="<?= e(url('/carnet/ajouter')) ?>" class="btn">+ Ajouter une escale</a>
 </div>
 
 <section class="stats" aria-label="Mes statistiques">
@@ -28,6 +28,6 @@
 <?php else: ?>
     <div class="empty">
         <p>Votre carnet est vide pour l'instant.</p>
-        <a href="/villes" class="btn btn-outline">Choisir une ville</a>
+        <a href="<?= e(url('/villes')) ?>" class="btn btn-outline">Choisir une ville</a>
     </div>
 <?php endif ?>

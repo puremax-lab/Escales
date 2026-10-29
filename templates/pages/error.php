@@ -3,5 +3,5 @@
     <p class="error-code"><?= $status ?></p>
     <h1><?= e($title) ?></h1>
     <p class="muted"><?= e($message) ?></p>
-    <a href="/" class="btn">Retour à l'accueil</a>
+    <a href="<?= e(url('/')) ?>" class="btn">Retour à l'accueil</a>
 </div>

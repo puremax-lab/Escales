@@ -17,6 +17,8 @@ header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 
+// The request comes first: it finds the folder the site is served from, used by the session cookie and url().
+$request = App\Core\Request::fromGlobals();
 $pdo = App\Core\Database::connect($config['db']['dsn'], $config['db']['user'], $config['db']['password']);
 $app = new App\App($pdo, App\Core\Session::start(), $config['debug']);
-$app->handle(App\Core\Request::fromGlobals())->send();
+$app->handle($request)->send();

@@ -1,19 +1,19 @@
 <?php /** @var array $city @var array $visits @var bool $inJournal @var ?array $currentUser */ ?>
-<a href="/villes" class="back">← Toutes les villes</a>
+<a href="<?= e(url('/villes')) ?>" class="back">← Toutes les villes</a>
 
 <div class="city-hero">
     <span class="country-code country-code-large" aria-hidden="true"><?= e($city['country_code']) ?></span>
     <div>
         <h1><?= e($city['name']) ?></h1>
         <p class="muted">
-            <a href="/villes?pays=<?= $city['country_id'] ?>"><?= e($city['country']) ?></a><?= $city['is_capital'] ? ' · capitale' : '' ?>
+            <a href="<?= e(url('/villes?pays=')) ?><?= $city['country_id'] ?>"><?= e($city['country']) ?></a><?= $city['is_capital'] ? ' · capitale' : '' ?>
         </p>
     </div>
     <div class="city-hero-action">
         <?php if ($inJournal): ?>
             <span class="badge">✓ Dans votre carnet</span>
         <?php else: ?>
-            <a href="/carnet/ajouter?ville=<?= $city['id'] ?>" class="btn">+ J'y suis allé</a>
+            <a href="<?= e(url('/carnet/ajouter?ville=')) ?><?= $city['id'] ?>" class="btn">+ J'y suis allé</a>
         <?php endif ?>
     </div>
 </div>

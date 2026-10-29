@@ -2,10 +2,10 @@
 $value = fn (string $field) => e(is_scalar($old[$field] ?? null) ? (string) $old[$field] : '');
 $action = $visit ? '/carnet/' . $visit['id'] . '/modifier' : '/carnet/ajouter';
 ?>
-<a href="/carnet" class="back">← Mon carnet</a>
+<a href="<?= e(url('/carnet')) ?>" class="back">← Mon carnet</a>
 <h1><?= e($title) ?></h1>
 
-<form method="post" action="<?= $action ?>" class="card form form-narrow" novalidate>
+<form method="post" action="<?= e(url($action)) ?>" class="card form form-narrow" novalidate>
     <input type="hidden" name="_token" value="<?= e($csrfToken) ?>">
 
     <div class="field">
@@ -46,6 +46,6 @@ $action = $visit ? '/carnet/' . $visit['id'] . '/modifier' : '/carnet/ajouter';
 
     <div class="form-actions">
         <button type="submit" class="btn">Enregistrer</button>
-        <a href="/carnet" class="btn btn-ghost">Annuler</a>
+        <a href="<?= e(url('/carnet')) ?>" class="btn btn-ghost">Annuler</a>
     </div>
 </form>

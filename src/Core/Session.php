@@ -17,6 +17,8 @@ final class Session
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_set_cookie_params([
+                // Limited to the app's folder, so other apps on the same domain do not share it.
+                'path' => Request::$basePath . '/',
                 'httponly' => true,
                 'samesite' => 'Lax',
                 'secure' => ($_SERVER['HTTPS'] ?? '') === 'on',

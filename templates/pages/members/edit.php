@@ -1,10 +1,10 @@
 <?php /** @var array $old @var array $errors @var array $cityGroups @var array $currentUser @var string $csrfToken */
 $value = fn (string $field) => e(is_scalar($old[$field] ?? null) ? (string) $old[$field] : '');
 ?>
-<a href="/membres/<?= e(rawurlencode($currentUser['pseudo'])) ?>" class="back">← Mon profil</a>
+<a href="<?= e(url('/membres/')) ?><?= e(rawurlencode($currentUser['pseudo'])) ?>" class="back">← Mon profil</a>
 <h1>Modifier mon profil</h1>
 
-<form method="post" action="/profil/modifier" class="card form form-narrow" novalidate>
+<form method="post" action="<?= e(url('/profil/modifier')) ?>" class="card form form-narrow" novalidate>
     <input type="hidden" name="_token" value="<?= e($csrfToken) ?>">
 
     <div class="field-row">
@@ -42,6 +42,6 @@ $value = fn (string $field) => e(is_scalar($old[$field] ?? null) ? (string) $old
 
     <div class="form-actions">
         <button type="submit" class="btn">Enregistrer</button>
-        <a href="/membres/<?= e(rawurlencode($currentUser['pseudo'])) ?>" class="btn btn-ghost">Annuler</a>
+        <a href="<?= e(url('/membres/')) ?><?= e(rawurlencode($currentUser['pseudo'])) ?>" class="btn btn-ghost">Annuler</a>
     </div>
 </form>

@@ -19,6 +19,16 @@ final class PagesTest extends AppTestCase
 
         $this->assertStringContainsString('href="https://github.com/puremax-lab/Escales"', $response->body);
         $this->assertStringContainsString('href="https://github.com/puremax-lab"', $response->body);
+        $this->assertStringContainsString('href="/mentions-legales"', $response->body);
+    }
+
+    public function testLegalNoticePage(): void
+    {
+        $response = $this->get('/mentions-legales');
+
+        $this->assertSame(200, $response->status);
+        $this->assertStringContainsString('<h1>Mentions légales</h1>', $response->body);
+        $this->assertStringContainsString('alwaysdata', $response->body);
     }
 
     public function testSearchesCitiesByCityOrCountryName(): void

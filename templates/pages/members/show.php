@@ -11,7 +11,7 @@
         </ul>
     </div>
     <?php if ($isMe): ?>
-        <a href="/profil/modifier" class="btn btn-outline btn-small">Modifier mon profil</a>
+        <a href="<?= e(url('/profil/modifier')) ?>" class="btn btn-outline btn-small">Modifier mon profil</a>
     <?php endif ?>
 </div>
 

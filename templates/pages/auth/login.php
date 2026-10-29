@@ -3,7 +3,7 @@
     <h1>Connexion</h1>
     <p class="muted">Compte de démonstration : <strong>camille</strong> / <strong>password</strong></p>
 
-    <form method="post" action="/connexion" class="card form" novalidate>
+    <form method="post" action="<?= e(url('/connexion')) ?>" class="card form" novalidate>
         <input type="hidden" name="_token" value="<?= e($csrfToken) ?>">
         <?php if (!empty($error)): ?>
             <div class="flash flash-error" role="alert"><?= e($error) ?></div>
@@ -18,5 +18,5 @@
         </div>
         <button type="submit" class="btn btn-block">Se connecter</button>
     </form>
-    <p class="center">Pas encore de compte ? <a href="/inscription">Inscrivez-vous</a></p>
+    <p class="center">Pas encore de compte ? <a href="<?= e(url('/inscription')) ?>">Inscrivez-vous</a></p>
 </div>

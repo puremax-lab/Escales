@@ -90,6 +90,7 @@ final class App
         $r = new Router();
         $r->get('/', fn () => $home()->index($this->cities, $this->visits, $this->users));
 
+        $r->get('/mentions-legales', fn () => $home()->legal());
         $r->get('/villes', fn () => $city()->index($this->cities, $this->countries));
         $r->get('/villes/{id}', fn (string $id) => $city()->show((int) $id, $this->cities, $this->visits));
 

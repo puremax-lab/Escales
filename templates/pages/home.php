@@ -5,11 +5,11 @@
     <p class="lead">Notez les villes que vous avez visitées, donnez votre avis et découvrez où sont partis les autres voyageurs.</p>
     <div class="hero-actions">
         <?php if ($currentUser): ?>
-            <a href="/carnet/ajouter" class="btn btn-large">+ Ajouter une escale</a>
+            <a href="<?= e(url('/carnet/ajouter')) ?>" class="btn btn-large">+ Ajouter une escale</a>
         <?php else: ?>
-            <a href="/inscription" class="btn btn-large">Créer mon carnet</a>
+            <a href="<?= e(url('/inscription')) ?>" class="btn btn-large">Créer mon carnet</a>
         <?php endif ?>
-        <a href="/villes" class="btn btn-large btn-outline">Explorer les villes</a>
+        <a href="<?= e(url('/villes')) ?>" class="btn btn-large btn-outline">Explorer les villes</a>
     </div>
 </section>
 
@@ -22,7 +22,7 @@
 <section>
     <div class="section-head">
         <h2>Les villes les plus visitées</h2>
-        <a href="/villes">Toutes les villes →</a>
+        <a href="<?= e(url('/villes')) ?>">Toutes les villes →</a>
     </div>
     <div class="grid">
         <?php foreach ($topCities as $city): ?>
