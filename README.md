@@ -3,8 +3,6 @@
 **A travel journal web app written in plain PHP, with no framework.**
 *Carnet de voyage partagé, développé en PHP natif, sans framework.*
 
-Members sign up, note the cities they have visited (date, rating out of 5, review) and browse the other travellers' journals.
-
 ![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white)
 ![No framework](https://img.shields.io/badge/framework-none-0e7c86)
@@ -38,9 +36,9 @@ Members sign up, note the cities they have visited (date, rating out of 5, revie
 |---|---|
 | ![Journal](docs/screenshots/journal.png) | ![Form](docs/screenshots/form.png) |
 
-| Member profile | Mobile: home | Mobile: profile |
-|---|---|---|
-| ![Member](docs/screenshots/member.png) | ![Mobile home](docs/screenshots/mobile-home.png) | ![Mobile profile](docs/screenshots/mobile-member.png) |
+| Mobile: home | Mobile: profile |
+|---|---|
+| ![Mobile home](docs/screenshots/mobile-home.png) | ![Mobile profile](docs/screenshots/mobile-member.png) |
 
 ## Technical highlights
 
