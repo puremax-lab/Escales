@@ -8,7 +8,7 @@
 Log in with **camille** / **password** (other demo accounts: `malik`, `lena`, same password), or create your own account.
 
 ![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white)
+![MySQL / SQLite](https://img.shields.io/badge/MySQL_%2F_SQLite-4479A1?logo=mysql![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white)logoColor=white)
 ![No framework](https://img.shields.io/badge/framework-none-0e7c86)
 [![Tests](https://github.com/puremax-lab/Escales/actions/workflows/tests.yml/badge.svg)](https://github.com/puremax-lab/Escales/actions/workflows/tests.yml)
 
