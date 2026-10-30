@@ -68,7 +68,7 @@ Log in with **camille** / **password** (other demo accounts: `malik`, `lena`, sa
 - **Database constraints**: foreign keys, unique keys (one entry per city per member), a `CHECK` on the rating, and journal entries deleted with their member.
 
 **Quality**
-- **PHPUnit tests**: unit tests for the router, validator and CSRF, and functional tests that send real requests through the whole app (sign-up, login, throttle, journal, permissions, escaping).
+- **PHPUnit tests**: unit tests for the router, validator, CSRF and sub-folder handling, and functional tests that send real requests through the whole app (sign-up, login, throttle, journal, permissions, escaping).
 - **GitHub Actions** runs the tests on PHP 8.3 and 8.4 at every push.
 
 ## Tech stack
