@@ -3,6 +3,10 @@
 **A travel journal web app written in plain PHP, with no framework.**
 *Carnet de voyage partagé, développé en PHP natif, sans framework.*
 
+### 👉 [Try the live demo](https://puremax-lab.alwaysdata.net/escales)
+
+Log in with **camille** / **password** (other demo accounts: `malik`, `lena`, same password), or create your own account.
+
 ![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white)
 ![No framework](https://img.shields.io/badge/framework-none-0e7c86)
@@ -17,7 +21,7 @@
 | **What it does** | Visitors search cities and read reviews. Members keep a journal of the cities they have visited, with a public profile page |
 | **What it shows** | PHP fundamentals without a framework: a router, an MVC structure, PDO, sessions, server-side validation and web security |
 | **Why no framework** | To show that I understand what a framework like Symfony does for you (see [RecetteVie](https://github.com/puremax-lab/RecetteVie), my Symfony project) |
-| **Status** | Tested with MySQL and SQLite, responsive on phones and desktops, covered by automated tests |
+| **Status** | Deployed online, tested with MySQL and SQLite, responsive on phones and desktops, covered by automated tests |
 
 ## Features
 
@@ -25,6 +29,7 @@
 - **Journal**: add, edit and delete the cities you have visited, with a date, a 1 to 5 star rating and a review
 - **Members**: sign-up, login, logout, public profile with statistics (cities, countries, average rating), profile editing
 - **Home page**: key figures, most visited cities, latest reviews
+- **Legal notice**: publisher, host and the personal data the site keeps
 
 ## Screenshots
 
@@ -47,6 +52,7 @@
 - **Router** ([`Router`](src/Core/Router.php)) with URL parameters such as `/villes/{id}`, and 404 / 405 answers.
 - **MVC**: controllers in [`src/Controller`](src/Controller), SQL in repositories ([`src/Repository`](src/Repository)), HTML in PHP templates ([`templates`](templates)) rendered inside a shared layout.
 - **Composer** for PSR-4 autoloading and PHPUnit only: no runtime dependency.
+- **Works in a sub-folder** (online at `/escales`): the request finds its base path, and links, redirects and the session cookie follow it through a `url()` helper.
 
 **Security**
 - **SQL injection**: every query that contains user input is a PDO prepared statement (the others are fixed SQL with no variables).
@@ -74,6 +80,7 @@
 | Front end | HTML and CSS, no library, no JavaScript |
 | Tests | PHPUnit 12 |
 | CI | GitHub Actions |
+| Hosting | alwaysdata (SQLite), served from a sub-folder |
 
 ## Database
 
