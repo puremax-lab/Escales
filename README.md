@@ -61,9 +61,9 @@ The app itself is a shared travel journal: visitors search cities and read revie
 |---|---|
 | ![Cities](docs/screenshots/cities.png) | ![City page](docs/screenshots/city.png) |
 
-| My journal | Form validation |
+| My journal | Adding a city from anywhere in the world |
 |---|---|
-| ![Journal](docs/screenshots/journal.png) | ![Form](docs/screenshots/form.png) |
+| ![Journal](docs/screenshots/journal.png) | ![World city search](docs/screenshots/form.png) |
 
 | Mobile: home | Mobile: profile |
 |---|---|
