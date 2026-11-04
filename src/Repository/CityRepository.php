@@ -103,25 +103,6 @@ final class CityRepository
         return $stmt->fetchAll();
     }
 
-    /** @return array<string, list<array{id: int, name: string}>> cities grouped by country, for a select */
-    public function groupedByCountry(): array
-    {
-        $rows = $this->pdo->query(
-            'SELECT ci.id, ci.name, ci.region, co.name AS country
-             FROM cities ci JOIN countries co ON co.id = ci.country_id
-             ORDER BY co.name, ci.name'
-        )->fetchAll();
-
-        $groups = [];
-        foreach ($rows as $row) {
-            // Two towns can share a name: the region tells them apart.
-            $name = $row['region'] !== '' ? $row['name'] . ' (' . $row['region'] . ')' : $row['name'];
-            $groups[$row['country']][] = ['id' => (int) $row['id'], 'name' => $name];
-        }
-
-        return $groups;
-    }
-
     public function count(): int
     {
         return (int) $this->pdo->query('SELECT COUNT(*) FROM cities')->fetchColumn();

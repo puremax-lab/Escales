@@ -1,4 +1,4 @@
-<?php /** @var array $old @var array $errors @var array $cityGroups @var array $currentUser @var string $csrfToken */
+<?php /** @var array $old @var array $errors @var array $cityField @var array $currentUser @var string $csrfToken */
 $value = fn (string $field) => e(is_scalar($old[$field] ?? null) ? (string) $old[$field] : '');
 ?>
 <a href="<?= e(url('/membres/')) ?><?= e(rawurlencode($currentUser['pseudo'])) ?>" class="back">← Mon profil</a>
@@ -20,23 +20,13 @@ $value = fn (string $field) => e(is_scalar($old[$field] ?? null) ? (string) $old
         </div>
     </div>
 
-    <div class="field-row">
-        <div class="field">
-            <label for="birth_date">Date de naissance</label>
-            <input id="birth_date" name="birth_date" type="date" value="<?= $value('birth_date') ?>" required<?= invalid_attrs($errors, 'birth_date') ?>>
-            <?= field_error($errors, 'birth_date') ?>
-        </div>
-        <div class="field">
-            <label for="city_id">Ville où vous habitez</label>
-            <?= $this->partial('partials/city-select', [
-                'cityGroups' => $cityGroups,
-                'name' => 'city_id',
-                'selected' => $old['city_id'] ?? '',
-                'placeholder' => 'Choisir une ville',
-                'errors' => $errors,
-            ]) ?>
-        </div>
+    <div class="field">
+        <label for="birth_date">Date de naissance</label>
+        <input id="birth_date" name="birth_date" type="date" value="<?= $value('birth_date') ?>" required<?= invalid_attrs($errors, 'birth_date') ?>>
+        <?= field_error($errors, 'birth_date') ?>
     </div>
+
+    <?= $this->partial('partials/city-picker', ['cityField' => $cityField, 'errors' => $errors]) ?>
 
     <p class="hint">Le pseudo ne peut pas être modifié.</p>
 

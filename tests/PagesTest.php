@@ -54,14 +54,18 @@ final class PagesTest extends AppTestCase
         $this->assertStringNotContainsString('Lisbonne', $body);
     }
 
-    public function testPaginatesTheCityList(): void
+    public function testLoadsTheCityListPageByPage(): void
     {
         $first = $this->get('/villes')->body;
         $this->assertSame(12, substr_count($first, 'class="card city-card"'));
-        $this->assertStringContainsString('href="/villes?page=3"', $first);
+        // Without JavaScript, "Charger la suite" opens the next page; with it, the next cards are added on scroll.
+        $this->assertStringContainsString('<a href="/villes?page=2" class="btn btn-outline" data-load-more="#city-grid">Charger la suite</a>', $first);
+        $this->assertStringContainsString('/assets/load-more.js', $first);
+        $this->assertStringContainsString('href="/villes?page=3"', $this->get('/villes?page=2')->body);
 
         $last = $this->get('/villes?page=3')->body;
         $this->assertSame(11, substr_count($last, 'class="card city-card"'));
+        $this->assertStringNotContainsString('Charger la suite', $last);
     }
 
     public function testCityPageShowsReviewsAndAverageRating(): void

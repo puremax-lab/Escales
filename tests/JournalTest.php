@@ -209,6 +209,29 @@ final class JournalTest extends AppTestCase
         $this->assertStringContainsString('Portugais(e)', $this->get('/membres/lena')->body);
     }
 
+    public function testProfileShowsTheCurrentHomeCityTicked(): void
+    {
+        $this->loginAs('lena');
+
+        $this->assertStringContainsString('<input type="radio" name="city" value="ville:10" checked>', $this->get('/profil/modifier')->body);
+    }
+
+    public function testMovesToACityOutsideEscales(): void
+    {
+        $this->loginAs('lena');
+
+        $response = $this->post('/profil/modifier', [
+            'first_name' => 'Léna',
+            'last_name' => 'Martins',
+            'birth_date' => '1999-01-25',
+            'city' => 'lieu:N4001',
+            'city_q' => 'Paris',
+        ]);
+
+        $this->assertRedirect($response, '/membres/lena');
+        $this->assertStringContainsString('Paris, États-Unis', $this->get('/membres/lena')->body);
+    }
+
     public function testDeletingAMemberDeletesTheirJournal(): void
     {
         $this->pdo->exec('DELETE FROM users WHERE id = 1');

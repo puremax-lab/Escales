@@ -4,9 +4,7 @@ namespace App\Controller;
 
 use App\Core\Response;
 use App\Core\Validator;
-use App\Places\PlaceFinder;
-use App\Places\PlaceSearchUnavailable;
-use App\Repository\CityRepository;
+use App\Places\CityPicker;
 use App\Repository\VisitRepository;
 
 /**
@@ -26,41 +24,41 @@ final class JournalController extends Controller
         ]);
     }
 
-    public function create(CityRepository $cities, PlaceFinder $places): Response
+    public function create(CityPicker $picker): Response
     {
         $this->requireUser();
         $old = $this->pickedCity() + ['city_id' => '', 'visited_on' => '', 'rating' => '', 'note' => ''];
 
-        return $this->form($cities, $places, null, $old);
+        return $this->form($picker, null, $old);
     }
 
-    public function store(CityRepository $cities, PlaceFinder $places, VisitRepository $visits): Response
+    public function store(CityPicker $picker, VisitRepository $visits): Response
     {
         $user = $this->requireUser();
-        [$v, $cityId, $place] = $this->validate($cities, $places, $visits, $user['id'], null);
+        [$v, $city] = $this->validate($picker, $visits, $user['id'], null);
         if ($v->fails()) {
-            return $this->form($cities, $places, null, $this->request->body, $v->errors());
+            return $this->form($picker, null, $this->request->body, $v->errors());
         }
-        $visits->create($user['id'], $this->values($v, $cityId ?? $cities->createFromPlace($place)));
+        $visits->create($user['id'], $this->values($v, $picker->save($city)));
 
         return $this->redirect('/carnet', 'Escale ajoutée à votre carnet.');
     }
 
-    public function edit(int $id, CityRepository $cities, PlaceFinder $places, VisitRepository $visits): Response
+    public function edit(int $id, CityPicker $picker, VisitRepository $visits): Response
     {
         $visit = $this->ownVisit($id, $visits);
 
-        return $this->form($cities, $places, $visit, $this->pickedCity() + $visit);
+        return $this->form($picker, $visit, $this->pickedCity() + $visit);
     }
 
-    public function update(int $id, CityRepository $cities, PlaceFinder $places, VisitRepository $visits): Response
+    public function update(int $id, CityPicker $picker, VisitRepository $visits): Response
     {
         $visit = $this->ownVisit($id, $visits);
-        [$v, $cityId, $place] = $this->validate($cities, $places, $visits, $visit['user_id'], $id);
+        [$v, $city] = $this->validate($picker, $visits, $visit['user_id'], $id);
         if ($v->fails()) {
-            return $this->form($cities, $places, $visit, $this->request->body, $v->errors());
+            return $this->form($picker, $visit, $this->request->body, $v->errors());
         }
-        $visits->update($id, $visit['user_id'], $this->values($v, $cityId ?? $cities->createFromPlace($place)));
+        $visits->update($id, $visit['user_id'], $this->values($v, $picker->save($city)));
 
         return $this->redirect('/carnet', 'Escale modifiée.');
     }
@@ -104,40 +102,16 @@ final class JournalController extends Controller
         return [];
     }
 
-    /**
-     * A city of the world search, looked up again on the server: the browser only sends its reference,
-     * so nobody can save a made-up city.
-     */
-    private function findPlace(PlaceFinder $places, string $query, string $ref): ?array
+    /** @return array{Validator, ?array} the validator and the chosen city */
+    private function validate(CityPicker $picker, VisitRepository $visits, int $userId, ?int $visitId): array
     {
-        if ($query === '' || $ref === '') {
-            return null;
-        }
-        try {
-            foreach ($places->search($query) as $place) {
-                if ($place['ref'] === $ref) {
-                    return $place;
-                }
-            }
-        } catch (PlaceSearchUnavailable) {
-        }
-
-        return null;
-    }
-
-    /** @return array{Validator, ?int, ?array} the validator, and the saved city or the new place */
-    private function validate(CityRepository $cities, PlaceFinder $places, VisitRepository $visits, int $userId, ?int $visitId): array
-    {
-        $place = null;
-        $cityId = (int) $this->request->input('city_id');
-        $cityId = $cities->exists($cityId) ? $cityId : null;
-        if ($this->request->input('place') !== '') {
-            $place = $this->findPlace($places, $this->request->input('q'), $this->request->input('place'));
-            $cityId = $place ? $cities->idForPlace($place) : null;
-        }
+        $city = $this->request->input('place') !== ''
+            ? $picker->resolve('lieu:' . $this->request->input('place'), $this->request->input('q'))
+            : $picker->resolve('ville:' . $this->request->input('city_id'), '');
+        $cityId = $city['id'] ?? null;
 
         $v = (new Validator($this->request->body))
-            ->rule('city_id', $cityId !== null || $place !== null, 'Choisissez une ville.')
+            ->rule('city_id', $city !== null, 'Choisissez une ville.')
             ->rule('city_id', $cityId === null || !$visits->hasCity($userId, $cityId, $visitId), 'Cette ville est déjà dans votre carnet.')
             ->required('visited_on')
             ->date('visited_on', '1950-01-01', date('Y-m-d'), 'Date invalide ou dans le futur.')
@@ -145,7 +119,7 @@ final class JournalController extends Controller
             ->integer('rating', 1, 5, 'Note de 1 à 5.')
             ->maxLength('note', 500);
 
-        return [$v, $cityId, $place];
+        return [$v, $city];
     }
 
     private function values(Validator $v, int $cityId): array
@@ -158,12 +132,12 @@ final class JournalController extends Controller
         ];
     }
 
-    private function form(CityRepository $cities, PlaceFinder $places, ?array $visit, array $old, array $errors = []): Response
+    private function form(CityPicker $picker, ?array $visit, array $old, array $errors = []): Response
     {
         $path = $visit ? '/carnet/' . $visit['id'] . '/modifier' : '/carnet/ajouter';
-        $chosen = $this->chosenCity($cities, $places, $old);
+        $chosen = $this->chosenCity($picker, $old);
         $searching = $chosen === null || $this->request->query('changer') !== '';
-        $query = $this->request->query('q') ?: (string) ($old['q'] ?? '');
+        $query = $this->request->query('q') ?: (is_string($old['q'] ?? null) ? $old['q'] : '');
 
         return $this->render('pages/journal/form', [
             'title' => $visit ? 'Modifier une escale' : 'Ajouter une escale',
@@ -171,66 +145,42 @@ final class JournalController extends Controller
             'path' => $path,
             'chosen' => $searching ? null : $chosen,
             'query' => $query,
-            'search' => $searching && $query !== '' ? $this->searchResults($cities, $places, $query, $path) : null,
+            'search' => $searching && $query !== '' ? $this->searchResults($picker, $query, $path) : null,
             'old' => $old,
             'errors' => $errors,
         ], $errors ? 422 : 200);
     }
 
     /** The city already chosen in the form, with the fields to send it again. */
-    private function chosenCity(CityRepository $cities, PlaceFinder $places, array $old): ?array
+    private function chosenCity(CityPicker $picker, array $old): ?array
     {
         $ref = is_string($old['place'] ?? null) ? $old['place'] : '';
-        if ($ref !== '') {
-            $query = is_string($old['q'] ?? null) ? $old['q'] : '';
-            $place = $this->findPlace($places, $query, $ref);
-
-            return $place ? [
-                'label' => $place['name'],
-                'detail' => implode(' · ', array_filter([$place['region'], $place['country']])),
-                'fields' => ['place' => $ref, 'q' => $query],
-            ] : null;
+        $query = is_string($old['q'] ?? null) ? $old['q'] : '';
+        $city = $ref !== ''
+            ? $picker->resolve('lieu:' . $ref, $query)
+            : $picker->resolve('ville:' . (is_scalar($old['city_id'] ?? null) ? $old['city_id'] : ''), '');
+        if ($city === null) {
+            return null;
         }
 
-        $city = is_scalar($old['city_id'] ?? null) ? $cities->find((int) $old['city_id']) : null;
-
-        return $city ? [
+        return [
             'label' => $city['name'],
-            'detail' => implode(' · ', array_filter([$city['region'], $city['country']])),
-            'fields' => ['city_id' => (string) $city['id']],
-        ] : null;
+            'detail' => $city['detail'],
+            'fields' => $ref !== '' ? ['place' => $ref, 'q' => $query] : ['city_id' => (string) $city['id']],
+        ];
     }
 
-    /** Cities already in Escales first, then the rest of the world. */
-    private function searchResults(CityRepository $cities, PlaceFinder $places, string $query, string $path): array
+    /** Each result links back to the form with the city picked. */
+    private function searchResults(CityPicker $picker, string $query, string $path): array
     {
-        $results = [];
-        foreach ($cities->search($query, null, 8, 0) as $city) {
-            $results[$city['id']] = [
-                'href' => $path . '?ville=' . $city['id'],
-                'name' => $city['name'],
-                'detail' => implode(' · ', array_filter([$city['region'], $city['country']])),
-            ];
-        }
+        $search = $picker->search($query);
+        $results = array_map(function (array $option) use ($path, $query) {
+            [$type, $key] = explode(':', $option['value'], 2);
+            $params = $type === 'ville' ? ['ville' => $key] : ['lieu' => $key, 'q' => $query];
 
-        $unavailable = false;
-        try {
-            foreach ($places->search($query) as $place) {
-                $id = $cities->idForPlace($place);
-                $key = $id ?? $place['ref'];
-                if (isset($results[$key])) {
-                    continue;
-                }
-                $results[$key] = [
-                    'href' => $path . '?' . ($id ? 'ville=' . $id : http_build_query(['lieu' => $place['ref'], 'q' => $query])),
-                    'name' => $place['name'],
-                    'detail' => implode(' · ', array_filter([$place['region'], $place['country']])),
-                ];
-            }
-        } catch (PlaceSearchUnavailable) {
-            $unavailable = true;
-        }
+            return ['href' => $path . '?' . http_build_query($params)] + $option;
+        }, $search['options']);
 
-        return ['results' => array_values($results), 'unavailable' => $unavailable];
+        return ['results' => $results, 'unavailable' => $search['unavailable']];
     }
 }

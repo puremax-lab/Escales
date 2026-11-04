@@ -45,14 +45,15 @@ The app itself is a shared travel journal: visitors search cities and read revie
 **An external API, without a library**
 - **Every city in the world**: the journal searches [Photon](https://photon.komoot.io), a geocoder built on OpenStreetMap data, with names in French ([`PhotonPlaceFinder`](src/Places/PhotonPlaceFinder.php)). A plain `file_get_contents` with a timeout, no SDK.
 - **Trust nothing from the browser**: the form only sends the place reference; the server looks the city up again before saving it, so a made-up city is refused.
+- **No JavaScript needed**: in the sign-up and profile forms, "Chercher" sends the form again and lists the cities to tick, keeping what was typed.
 - **Saved on first use**: a city enters the database the first time a member notes it, with its country if it is new, and is shared by everyone after that.
 - **Works when the service is down**: the search still shows the cities already in Escales, with a message.
 
 ## The app
 
-- **Cities**: search by city or country, filter by country, pagination, page per city with reviews and average rating
+- **Cities**: search by city or country, filter by country, infinite scroll with a "Charger la suite" link that works without JavaScript, page per city with reviews and average rating
 - **Journal**: add any city in the world you have visited (search, pick, rate), edit and delete entries, with a date, a 1 to 5 star rating and a review
-- **Members**: sign-up, login, logout, public profile with statistics (cities, countries, average rating), profile editing
+- **Members**: sign-up with a home city anywhere in the world, login, logout, public profile with statistics (cities, countries, average rating), profile editing
 - **Home page**: key figures, most visited cities, latest reviews
 - **Legal notice**: publisher, host and the personal data the site keeps
 
@@ -122,7 +123,7 @@ erDiagram
 - **PHPUnit tests**: unit tests for the router, validator, CSRF and sub-folder handling, and functional tests that send real requests through the whole app (sign-up, login, throttle, journal, world city search with a fake search service, permissions, escaping).
 - **GitHub Actions** runs the tests on PHP 8.3 and 8.4 at every push.
 
-**Stack:** PHP 8.3+ (no framework), MySQL or SQLite, HTML and CSS with no library and no JavaScript, PHPUnit 12, GitHub Actions. Online on alwaysdata (SQLite), served from a sub-folder.
+**Stack:** PHP 8.3+ (no framework), MySQL or SQLite, HTML and CSS with no library, one small vanilla JavaScript file for the infinite scroll (every page works without it), PHPUnit 12, GitHub Actions. Online on alwaysdata (SQLite), served from a sub-folder.
 
 ## Run it locally
 

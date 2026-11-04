@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Core\Response;
 use App\Core\Validator;
-use App\Repository\CityRepository;
+use App\Places\CityPicker;
 use App\Repository\UserRepository;
 use App\Repository\VisitRepository;
 
@@ -25,35 +25,39 @@ final class MemberController extends Controller
         ]);
     }
 
-    public function edit(CityRepository $cities): Response
+    public function edit(CityPicker $picker): Response
     {
         $user = $this->requireUser();
 
-        return $this->form($cities, $user);
+        return $this->form($picker, $user, $picker->resolve('ville:' . $user['city_id'], ''));
     }
 
-    public function update(UserRepository $users, CityRepository $cities): Response
+    public function update(UserRepository $users, CityPicker $picker): Response
     {
         $user = $this->requireUser();
-        $v = ProfileRules::apply(new Validator($this->request->body), $cities);
+        $city = ProfileRules::homeCity($this->request, $picker);
+        if ($this->request->input('find_city') !== '') {
+            return $this->form($picker, $this->request->body, $city);
+        }
+        $v = ProfileRules::apply(new Validator($this->request->body), $city);
         if ($v->fails()) {
-            return $this->form($cities, $this->request->body, $v->errors());
+            return $this->form($picker, $this->request->body, $city, $v->errors());
         }
         $users->updateProfile($user['id'], [
             'first_name' => $v->value('first_name'),
             'last_name' => $v->value('last_name'),
             'birth_date' => $v->value('birth_date'),
-            'city_id' => (int) $v->value('city_id'),
+            'city_id' => $picker->save($city),
         ]);
 
         return $this->redirect('/membres/' . rawurlencode($user['pseudo']), 'Profil mis à jour.');
     }
 
-    private function form(CityRepository $cities, array $old, array $errors = []): Response
+    private function form(CityPicker $picker, array $old, ?array $city, array $errors = []): Response
     {
         return $this->render('pages/members/edit', [
             'title' => 'Modifier mon profil',
-            'cityGroups' => $cities->groupedByCountry(),
+            'cityField' => ProfileRules::cityField($this->request, $picker, $city),
             'old' => $old,
             'errors' => $errors,
         ], $errors ? 422 : 200);

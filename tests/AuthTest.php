@@ -37,6 +37,37 @@ final class AuthTest extends AppTestCase
         $this->assertTrue(password_verify('unmotdepasse', $hash));
     }
 
+    public function testSearchesTheHomeCityWithoutLosingTheForm(): void
+    {
+        $response = $this->post('/inscription', ['find_city' => '1', 'city_q' => 'Kyo', 'city_id' => ''] + $this->validSignUp());
+
+        $this->assertSame(200, $response->status);
+        $this->assertStringContainsString('<input type="radio" name="city" value="lieu:R2689">', $response->body);
+        $this->assertStringContainsString('Préfecture de Kyoto · Japon', $response->body);
+        $this->assertStringContainsString('value="anna_v"', $response->body);
+        $this->assertSame(3, $this->countRows('SELECT COUNT(*) FROM users'), 'searching does not sign up');
+    }
+
+    public function testSignsUpWithAHomeCityFromAnywhereInTheWorld(): void
+    {
+        $response = $this->post('/inscription', ['city' => 'lieu:R2689', 'city_q' => 'Kyo', 'city_id' => ''] + $this->validSignUp());
+
+        $this->assertRedirect($response, '/carnet');
+        $this->assertSame(1, $this->countRows("SELECT COUNT(*) FROM users u JOIN cities ci ON ci.id = u.city_id WHERE u.pseudo = 'anna_v' AND ci.place_ref = 'R2689'"));
+        $page = $this->get('/membres/anna_v')->body;
+        $this->assertStringContainsString('Kyoto, Japon', $page);
+        $this->assertStringNotContainsString('Nationalité', $page, 'unknown for a new country');
+    }
+
+    public function testAsksToTickACityAfterASearch(): void
+    {
+        $response = $this->post('/inscription', ['city_q' => 'Kyo', 'city_id' => ''] + $this->validSignUp());
+
+        $this->assertSame(422, $response->status);
+        $this->assertStringContainsString('Choisissez votre ville.', $response->body);
+        $this->assertStringContainsString('value="lieu:R2689"', $response->body);
+    }
+
     public function testRefusesInvalidSignUps(): void
     {
         $cases = [

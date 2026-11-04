@@ -16,6 +16,7 @@ use App\Core\Response;
 use App\Core\Router;
 use App\Core\Session;
 use App\Core\View;
+use App\Places\CityPicker;
 use App\Places\PhotonPlaceFinder;
 use App\Places\PlaceFinder;
 use App\Repository\CityRepository;
@@ -36,7 +37,7 @@ final class App
     private readonly UserRepository $users;
     private readonly VisitRepository $visits;
     private readonly LoginThrottle $throttle;
-    private readonly PlaceFinder $places;
+    private readonly CityPicker $picker;
 
     public function __construct(
         PDO $pdo,
@@ -44,8 +45,8 @@ final class App
         private readonly bool $debug = false,
         ?PlaceFinder $places = null,
     ) {
-        $this->places = $places ?? new PhotonPlaceFinder();
         $this->cities = new CityRepository($pdo);
+        $this->picker = new CityPicker($this->cities, $places ?? new PhotonPlaceFinder());
         $this->countries = new CountryRepository($pdo);
         $this->users = new UserRepository($pdo);
         $this->visits = new VisitRepository($pdo);
@@ -99,22 +100,22 @@ final class App
         $r->get('/villes', fn () => $city()->index($this->cities, $this->countries));
         $r->get('/villes/{id}', fn (string $id) => $city()->show((int) $id, $this->cities, $this->visits));
 
-        $r->get('/inscription', fn () => $auth()->registerForm($this->cities));
-        $r->post('/inscription', fn () => $auth()->register($this->users, $this->cities));
+        $r->get('/inscription', fn () => $auth()->registerForm($this->picker));
+        $r->post('/inscription', fn () => $auth()->register($this->users, $this->picker));
         $r->get('/connexion', fn () => $auth()->loginForm());
         $r->post('/connexion', fn () => $auth()->login($this->users, $this->throttle));
         $r->post('/deconnexion', fn () => $auth()->logout());
 
         $r->get('/carnet', fn () => $journal()->index($this->visits));
-        $r->get('/carnet/ajouter', fn () => $journal()->create($this->cities, $this->places));
-        $r->post('/carnet/ajouter', fn () => $journal()->store($this->cities, $this->places, $this->visits));
-        $r->get('/carnet/{id}/modifier', fn (string $id) => $journal()->edit((int) $id, $this->cities, $this->places, $this->visits));
-        $r->post('/carnet/{id}/modifier', fn (string $id) => $journal()->update((int) $id, $this->cities, $this->places, $this->visits));
+        $r->get('/carnet/ajouter', fn () => $journal()->create($this->picker));
+        $r->post('/carnet/ajouter', fn () => $journal()->store($this->picker, $this->visits));
+        $r->get('/carnet/{id}/modifier', fn (string $id) => $journal()->edit((int) $id, $this->picker, $this->visits));
+        $r->post('/carnet/{id}/modifier', fn (string $id) => $journal()->update((int) $id, $this->picker, $this->visits));
         $r->get('/carnet/{id}/supprimer', fn (string $id) => $journal()->confirmDelete((int) $id, $this->visits));
         $r->post('/carnet/{id}/supprimer',fn (string $id) => $journal()->delete((int) $id, $this->visits));
 
-        $r->get('/profil/modifier', fn () => $member()->edit($this->cities));
-        $r->post('/profil/modifier', fn () => $member()->update($this->users, $this->cities));
+        $r->get('/profil/modifier', fn () => $member()->edit($this->picker));
+        $r->post('/profil/modifier', fn () => $member()->update($this->users, $this->picker));
         $r->get('/membres/{pseudo}', fn (string $pseudo) => $member()->show($pseudo, $this->users, $this->visits));
 
         return $r;

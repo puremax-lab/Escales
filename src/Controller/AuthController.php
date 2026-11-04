@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Core\Response;
 use App\Core\Validator;
-use App\Repository\CityRepository;
+use App\Places\CityPicker;
 use App\Repository\LoginThrottle;
 use App\Repository\UserRepository;
 
@@ -13,18 +13,22 @@ final class AuthController extends Controller
     /** Hash of a random string, checked when the pseudo does not exist (see login()). */
     private const DUMMY_HASH = '$2y$10$BRsukmfgyhpjorIOWn9MA.WoEoGFOayKuDwi.ZHZAE3g5LYlTGncq';
 
-    public function registerForm(CityRepository $cities): Response
+    public function registerForm(CityPicker $picker): Response
     {
         if ($this->auth->user()) {
             return $this->redirect('/carnet');
         }
 
-        return $this->registerPage($cities);
+        return $this->registerPage($picker, null);
     }
 
-    public function register(UserRepository $users, CityRepository $cities): Response
+    public function register(UserRepository $users, CityPicker $picker): Response
     {
-        $v = ProfileRules::apply(new Validator($this->request->body), $cities)
+        $city = ProfileRules::homeCity($this->request, $picker);
+        if ($this->request->input('find_city') !== '') {
+            return $this->registerPage($picker, $city);
+        }
+        $v = ProfileRules::apply(new Validator($this->request->body), $city)
             ->required('pseudo')
             ->pattern('pseudo', '/^[a-zA-Z0-9_-]{3,30}$/', 'De 3 à 30 caractères : lettres, chiffres, - et _.')
             ->rule('pseudo', !$users->pseudoExists($this->request->input('pseudo')), 'Ce pseudo est déjà pris.')
@@ -33,7 +37,7 @@ final class AuthController extends Controller
             ->same('password_confirm', 'password', 'Les deux mots de passe ne correspondent pas.');
 
         if ($v->fails()) {
-            return $this->registerPage($cities, $v->errors(), 422);
+            return $this->registerPage($picker, $city, $v->errors(), 422);
         }
 
         $id = $users->create([
@@ -42,7 +46,7 @@ final class AuthController extends Controller
             'last_name' => $v->value('last_name'),
             'password' => $v->value('password'),
             'birth_date' => $v->value('birth_date'),
-            'city_id' => (int) $v->value('city_id'),
+            'city_id' => $picker->save($city),
         ]);
         $this->auth->login($id);
 
@@ -93,11 +97,11 @@ final class AuthController extends Controller
         return $this->redirect('/', 'Vous êtes déconnecté.');
     }
 
-    private function registerPage(CityRepository $cities, array $errors = [], int $status = 200): Response
+    private function registerPage(CityPicker $picker, ?array $city, array $errors = [], int $status = 200): Response
     {
         return $this->render('pages/auth/register', [
             'title' => 'Inscription',
-            'cityGroups' => $cities->groupedByCountry(),
+            'cityField' => ProfileRules::cityField($this->request, $picker, $city),
             'old' => $this->request->body,
             'errors' => $errors,
         ], $status);

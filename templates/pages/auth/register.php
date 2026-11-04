@@ -1,4 +1,4 @@
-<?php /** @var array $old @var array $errors @var array $cityGroups @var string $csrfToken */
+<?php /** @var array $old @var array $errors @var array $cityField @var string $csrfToken */
 $value = fn (string $field) => e(is_string($old[$field] ?? null) ? $old[$field] : '');
 ?>
 <div class="auth auth-wide">
@@ -28,23 +28,13 @@ $value = fn (string $field) => e(is_string($old[$field] ?? null) ? $old[$field] 
             <?= field_error($errors, 'pseudo') ?>
         </div>
 
-        <div class="field-row">
-            <div class="field">
-                <label for="birth_date">Date de naissance</label>
-                <input id="birth_date" name="birth_date" type="date" value="<?= $value('birth_date') ?>" required<?= invalid_attrs($errors, 'birth_date') ?>>
-                <?= field_error($errors, 'birth_date') ?>
-            </div>
-            <div class="field">
-                <label for="city_id">Ville où vous habitez</label>
-                <?= $this->partial('partials/city-select', [
-                    'cityGroups' => $cityGroups,
-                    'name' => 'city_id',
-                    'selected' => $old['city_id'] ?? '',
-                    'placeholder' => 'Choisir une ville',
-                    'errors' => $errors,
-                ]) ?>
-            </div>
+        <div class="field">
+            <label for="birth_date">Date de naissance</label>
+            <input id="birth_date" name="birth_date" type="date" value="<?= $value('birth_date') ?>" required<?= invalid_attrs($errors, 'birth_date') ?>>
+            <?= field_error($errors, 'birth_date') ?>
         </div>
+
+        <?= $this->partial('partials/city-picker', ['cityField' => $cityField, 'errors' => $errors]) ?>
 
         <div class="field-row">
             <div class="field">

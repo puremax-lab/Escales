@@ -21,7 +21,7 @@
 </form>
 
 <?php if ($cities): ?>
-    <div class="grid">
+    <div class="grid" id="city-grid">
         <?php foreach ($cities as $city): ?>
             <?= $this->partial('partials/city-card', ['city' => $city]) ?>
         <?php endforeach ?>
@@ -35,11 +35,10 @@
     </div>
 <?php endif ?>
 
-<?php if ($pages > 1): ?>
-    <nav class="pagination" aria-label="Pages">
-        <?php for ($i = 1; $i <= $pages; $i++): ?>
-            <?php $params = http_build_query(array_filter(['q' => $query, 'pays' => $countryId, 'page' => $i > 1 ? $i : null])) ?>
-            <a href="<?= e(url('/villes')) ?><?= $params ? '?' . e($params) : '' ?>"<?= $i === $page ? ' class="active" aria-current="page"' : '' ?>><?= $i ?></a>
-        <?php endfor ?>
-    </nav>
+<?php if ($page < $pages): ?>
+    <?php $next = http_build_query(array_filter(['q' => $query, 'pays' => $countryId, 'page' => $page + 1])) ?>
+    <p class="load-more">
+        <a href="<?= e(url('/villes')) ?>?<?= e($next) ?>" class="btn btn-outline" data-load-more="#city-grid">Charger la suite</a>
+    </p>
+    <script src="<?= e(url('/assets/load-more.js')) ?>" defer></script>
 <?php endif ?>
