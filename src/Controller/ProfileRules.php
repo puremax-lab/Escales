@@ -22,9 +22,9 @@ final class ProfileRules
                 'birth_date',
                 $today->modify('-120 years')->format('Y-m-d'),
                 $today->modify('-13 years')->format('Y-m-d'),
-                'Date invalide : il faut avoir au moins 13 ans.',
+                t('Date invalide : il faut avoir au moins 13 ans.'),
             )
-            ->rule('city', $city !== null, 'Choisissez votre ville.');
+            ->rule('city', $city !== null, t('Choisissez votre ville.'));
     }
 
     /** The home city ticked in the list ("city"), or sent as a plain id ("city_id"). */

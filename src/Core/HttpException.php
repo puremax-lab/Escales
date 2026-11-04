@@ -12,6 +12,6 @@ final class HttpException extends \RuntimeException
 
     public static function notFound(): self
     {
-        return new self(404, 'Page introuvable');
+        return new self(404, t('Page introuvable'));
     }
 }

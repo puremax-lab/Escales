@@ -24,21 +24,21 @@ final class Validator
         return is_string($value) ? trim($value) : '';
     }
 
-    public function required(string $field, string $message = 'Ce champ est obligatoire.'): self
+    public function required(string $field, ?string $message = null): self
     {
-        return $this->check($field, $this->value($field) !== '', $message);
+        return $this->check($field, $this->value($field) !== '', $message ?? t('Ce champ est obligatoire.'));
     }
 
     public function length(string $field, int $min, int $max): self
     {
         $length = mb_strlen($this->value($field));
 
-        return $this->check($field, $length >= $min && $length <= $max, "Entre $min et $max caractères.");
+        return $this->check($field, $length >= $min && $length <= $max, t('Entre %d et %d caractères.', $min, $max));
     }
 
     public function maxLength(string $field, int $max): self
     {
-        return $this->check($field, mb_strlen($this->value($field)) <= $max, "$max caractères maximum.");
+        return $this->check($field, mb_strlen($this->value($field)) <= $max, t('%d caractères maximum.', $max));
     }
 
     public function pattern(string $field, string $regex, string $message): self

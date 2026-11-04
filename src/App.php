@@ -11,6 +11,7 @@ use App\Controller\RedirectException;
 use App\Core\Auth;
 use App\Core\Csrf;
 use App\Core\HttpException;
+use App\Core\Lang;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Router;
@@ -58,30 +59,32 @@ final class App
 
     public function handle(Request $request): Response
     {
+        Lang::set($this->session->get(Lang::SESSION_KEY));
         $this->view->share('currentUser', $this->auth->user());
         $this->view->share('csrfToken', $this->csrf->token());
         $this->view->share('currentPath', parse_url($request->uri, PHP_URL_PATH) ?: '/');
+        $this->view->share('currentUri', $request->uri);
         // Called by the layout, so a redirect does not consume the messages meant for the next page.
         $this->view->share('takeFlashes', fn () => $this->session->takeFlashes());
 
         try {
             // Every form sends the CSRF token; a POST without a valid one is refused.
             if ($request->method === 'POST' && !$this->csrf->isValid($request->body['_token'] ?? null)) {
-                throw new HttpException(419, 'Votre session a expiré. Rechargez la page et réessayez.');
+                throw new HttpException(419, t('Votre session a expiré. Rechargez la page et réessayez.'));
             }
 
             return $this->router($request)->dispatch($request->method, $request->uri);
         } catch (RedirectException $e) {
             return Response::redirect($e->location);
         } catch (HttpException $e) {
-            return $this->errorPage($e->status, $e->getMessage());
+            return $this->errorPage($e->status, t($e->getMessage()));
         } catch (\Throwable $e) {
             if ($this->debug) {
                 throw $e;
             }
             error_log((string) $e);
 
-            return $this->errorPage(500, 'Une erreur est survenue. Réessayez dans un instant.');
+            return $this->errorPage(500, t('Une erreur est survenue. Réessayez dans un instant.'));
         }
     }
 
@@ -96,6 +99,7 @@ final class App
         $r = new Router();
         $r->get('/', fn () => $home()->index($this->cities, $this->visits, $this->users));
 
+        $r->get('/langue/{locale}', fn (string $locale) => $home()->language($locale));
         $r->get('/mentions-legales', fn () => $home()->legal());
         $r->get('/villes', fn () => $city()->index($this->cities, $this->countries));
         $r->get('/villes/{id}', fn (string $id) => $city()->show((int) $id, $this->cities, $this->visits));
@@ -123,8 +127,8 @@ final class App
 
     private function errorPage(int $status, string $message): Response
     {
-        $titles = [403 => 'Accès refusé', 404 => 'Page introuvable', 405 => 'Méthode non autorisée', 419 => 'Session expirée'];
-        $title = $titles[$status] ?? 'Erreur';
+        $titles = [403 => t('Accès refusé'), 404 => t('Page introuvable'), 405 => t('Méthode non autorisée'), 419 => t('Session expirée')];
+        $title = $titles[$status] ?? t('Erreur');
         $html = $this->view->render('pages/error', ['title' => $title, 'status' => $status, 'message' => $message]);
 
         return Response::html($html, $status);

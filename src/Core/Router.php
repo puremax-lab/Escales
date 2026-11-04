@@ -40,7 +40,7 @@ final class Router
             }
         }
 
-        throw $pathExists ? new HttpException(405, 'Méthode non autorisée') : HttpException::notFound();
+        throw $pathExists ? new HttpException(405, t('Méthode non autorisée')) : HttpException::notFound();
     }
 
     private function add(string $method, string $path, callable $handler): void

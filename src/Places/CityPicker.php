@@ -91,6 +91,6 @@ final class CityPicker
 
     private function option(string $value, string $name, string $region, string $country): array
     {
-        return ['value' => $value, 'name' => $name, 'detail' => implode(' · ', array_filter([$region, $country]))];
+        return ['value' => $value, 'name' => t($name), 'detail' => implode(' · ', array_filter([$region, t($country)]))];
     }
 }

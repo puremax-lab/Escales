@@ -38,7 +38,7 @@ abstract class Controller
     {
         $user = $this->auth->user();
         if ($user === null) {
-            $this->session->flash('info', 'Connectez-vous pour accéder à cette page.');
+            $this->session->flash('info', t('Connectez-vous pour accéder à cette page.'));
             $this->session->set('after_login', $this->request->uri);
             throw new RedirectException('/connexion');
         }

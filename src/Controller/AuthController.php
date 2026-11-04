@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Core\Lang;
 use App\Core\Response;
 use App\Core\Validator;
 use App\Places\CityPicker;
@@ -30,11 +31,11 @@ final class AuthController extends Controller
         }
         $v = ProfileRules::apply(new Validator($this->request->body), $city)
             ->required('pseudo')
-            ->pattern('pseudo', '/^[a-zA-Z0-9_-]{3,30}$/', 'De 3 à 30 caractères : lettres, chiffres, - et _.')
-            ->rule('pseudo', !$users->pseudoExists($this->request->input('pseudo')), 'Ce pseudo est déjà pris.')
+            ->pattern('pseudo', '/^[a-zA-Z0-9_-]{3,30}$/', t('De 3 à 30 caractères : lettres, chiffres, - et _.'))
+            ->rule('pseudo', !$users->pseudoExists($this->request->input('pseudo')), t('Ce pseudo est déjà pris.'))
             ->required('password')
             ->length('password', 8, 72)
-            ->same('password_confirm', 'password', 'Les deux mots de passe ne correspondent pas.');
+            ->same('password_confirm', 'password', t('Les deux mots de passe ne correspondent pas.'));
 
         if ($v->fails()) {
             return $this->registerPage($picker, $city, $v->errors(), 422);
@@ -50,7 +51,7 @@ final class AuthController extends Controller
         ]);
         $this->auth->login($id);
 
-        return $this->redirect('/carnet', 'Bienvenue ! Ajoutez votre première escale.');
+        return $this->redirect('/carnet', t('Bienvenue ! Ajoutez votre première escale.'));
     }
 
     public function loginForm(): Response
@@ -59,7 +60,7 @@ final class AuthController extends Controller
             return $this->redirect('/carnet');
         }
 
-        return $this->render('pages/auth/login', ['title' => 'Connexion', 'pseudo' => '']);
+        return $this->render('pages/auth/login', ['title' => t('Connexion'), 'pseudo' => '']);
     }
 
     public function login(UserRepository $users, LoginThrottle $throttle): Response
@@ -69,7 +70,7 @@ final class AuthController extends Controller
         $ip = $this->request->ip;
 
         if ($throttle->tooManyAttempts($pseudo, $ip)) {
-            $error = sprintf('Trop de tentatives. Réessayez dans %d minutes.', LoginThrottle::WINDOW_MINUTES);
+            $error = t('Trop de tentatives. Réessayez dans %d minutes.', LoginThrottle::WINDOW_MINUTES);
         } else {
             $account = $users->findForLogin($pseudo);
             // password_verify runs even for an unknown pseudo, so the answer time does not reveal which pseudos exist.
@@ -81,26 +82,28 @@ final class AuthController extends Controller
                 $target = $this->session->get('after_login', '/carnet');
                 $this->session->remove('after_login');
 
-                return $this->redirect(str_starts_with($target, '/') ? $target : '/carnet', 'Bon retour parmi nous !');
+                return $this->redirect(str_starts_with($target, '/') ? $target : '/carnet', t('Bon retour parmi nous !'));
             }
             $throttle->hit($pseudo, $ip);
-            $error = 'Pseudo ou mot de passe incorrect.';
+            $error = t('Pseudo ou mot de passe incorrect.');
         }
 
-        return $this->render('pages/auth/login', ['title' => 'Connexion', 'pseudo' => $pseudo, 'error' => $error], 422);
+        return $this->render('pages/auth/login', ['title' => t('Connexion'), 'pseudo' => $pseudo, 'error' => $error], 422);
     }
 
     public function logout(): Response
     {
         $this->auth->logout();
+        // Logging out empties the session, but the visitor keeps their language.
+        $this->session->set(Lang::SESSION_KEY, Lang::$locale);
 
-        return $this->redirect('/', 'Vous êtes déconnecté.');
+        return $this->redirect('/', t('Vous êtes déconnecté.'));
     }
 
     private function registerPage(CityPicker $picker, ?array $city, array $errors = [], int $status = 200): Response
     {
         return $this->render('pages/auth/register', [
-            'title' => 'Inscription',
+            'title' => t('Inscription'),
             'cityField' => ProfileRules::cityField($this->request, $picker, $city),
             'old' => $this->request->body,
             'errors' => $errors,

@@ -1,22 +1,22 @@
 <?php /** @var array $cities @var array $countries @var string $query @var ?int $countryId @var int $total @var int $page @var int $pages @var list<?int> $pageLinks */ ?>
 <div class="page-head">
-    <h1>Villes</h1>
+    <h1><?= e(t('Villes')) ?></h1>
     <p class="muted"><?= plural($total, 'ville') ?></p>
 </div>
 
 <form method="get" action="<?= e(url('/villes')) ?>" class="filters" role="search">
-    <input type="search" name="q" value="<?= e($query) ?>" placeholder="Une ville ou un pays…" aria-label="Rechercher une ville ou un pays">
-    <select name="pays" aria-label="Filtrer par pays">
-        <option value="">Tous les pays</option>
+    <input type="search" name="q" value="<?= e($query) ?>" placeholder="<?= e(t('Une ville ou un pays…')) ?>" aria-label="<?= e(t('Rechercher une ville ou un pays')) ?>">
+    <select name="pays" aria-label="<?= e(t('Filtrer par pays')) ?>">
+        <option value=""><?= e(t('Tous les pays')) ?></option>
         <?php foreach ($countries as $country): ?>
             <option value="<?= $country['id'] ?>"<?= $countryId === $country['id'] ? ' selected' : '' ?>>
-                <?= e($country['name']) ?> (<?= $country['city_count'] ?>)
+                <?= e(t($country['name'])) ?> (<?= $country['city_count'] ?>)
             </option>
         <?php endforeach ?>
     </select>
-    <button type="submit" class="btn">Rechercher</button>
+    <button type="submit" class="btn"><?= e(t('Rechercher')) ?></button>
     <?php if ($query !== '' || $countryId): ?>
-        <a href="<?= e(url('/villes')) ?>" class="btn btn-ghost">Effacer</a>
+        <a href="<?= e(url('/villes')) ?>" class="btn btn-ghost"><?= e(t('Effacer')) ?></a>
     <?php endif ?>
 </form>
 
@@ -28,18 +28,18 @@
     </div>
 <?php else: ?>
     <div class="empty">
-        <p>Aucune ville ne correspond à votre recherche.</p>
+        <p><?= e(t('Aucune ville ne correspond à votre recherche.')) ?></p>
         <?php if ($query !== ''): ?>
-            <a href="<?= e(url('/carnet/ajouter?' . http_build_query(['q' => $query]))) ?>" class="btn btn-outline">Ajouter « <?= e($query) ?> » à mon carnet</a>
+            <a href="<?= e(url('/carnet/ajouter?' . http_build_query(['q' => $query]))) ?>" class="btn btn-outline"><?= e(t('Ajouter « %s » à mon carnet', $query)) ?></a>
         <?php endif ?>
     </div>
 <?php endif ?>
 
 <?php if ($pages > 1): ?>
     <?php $pageUrl = fn (int $n) => url('/villes') . (($params = http_build_query(array_filter(['q' => $query, 'pays' => $countryId, 'page' => $n > 1 ? $n : null]))) ? '?' . $params : '') ?>
-    <nav class="pagination" aria-label="Pages">
+    <nav class="pagination" aria-label="<?= e(t('Pages')) ?>">
         <?php if ($page > 1): ?>
-            <a href="<?= e($pageUrl($page - 1)) ?>" rel="prev" aria-label="Page précédente">←<span class="page-word"> Précédent</span></a>
+            <a href="<?= e($pageUrl($page - 1)) ?>" rel="prev" aria-label="<?= e(t('Page précédente')) ?>">←<span class="page-word"> <?= e(t('Précédent')) ?></span></a>
         <?php endif ?>
         <?php foreach ($pageLinks as $n): ?>
             <?php if ($n === null): ?>
@@ -51,7 +51,7 @@
             <?php endif ?>
         <?php endforeach ?>
         <?php if ($page < $pages): ?>
-            <a href="<?= e($pageUrl($page + 1)) ?>" rel="next" aria-label="Page suivante"><span class="page-word">Suivant </span>→</a>
+            <a href="<?= e($pageUrl($page + 1)) ?>" rel="next" aria-label="<?= e(t('Page suivante')) ?>"><span class="page-word"><?= e(t('Suivant')) ?> </span>→</a>
         <?php endif ?>
     </nav>
 <?php endif ?>

@@ -50,13 +50,13 @@ final class MemberController extends Controller
             'city_id' => $picker->save($city),
         ]);
 
-        return $this->redirect('/membres/' . rawurlencode($user['pseudo']), 'Profil mis à jour.');
+        return $this->redirect('/membres/' . rawurlencode($user['pseudo']), t('Profil mis à jour.'));
     }
 
     private function form(CityPicker $picker, array $old, ?array $city, array $errors = []): Response
     {
         return $this->render('pages/members/edit', [
-            'title' => 'Modifier mon profil',
+            'title' => t('Modifier mon profil'),
             'cityField' => ProfileRules::cityField($this->request, $picker, $city),
             'old' => $old,
             'errors' => $errors,

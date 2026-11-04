@@ -18,7 +18,7 @@ final class JournalController extends Controller
         $user = $this->requireUser();
 
         return $this->render('pages/journal/index', [
-            'title' => 'Mon carnet',
+            'title' => t('Mon carnet'),
             'visits' => $visits->forUser($user['id']),
             'stats' => $visits->statsForUser($user['id']),
         ]);
@@ -41,7 +41,7 @@ final class JournalController extends Controller
         }
         $visits->create($user['id'], $this->values($v, $picker->save($city)));
 
-        return $this->redirect('/carnet', 'Escale ajoutée à votre carnet.');
+        return $this->redirect('/carnet', t('Escale ajoutée à votre carnet.'));
     }
 
     public function edit(int $id, CityPicker $picker, VisitRepository $visits): Response
@@ -60,7 +60,7 @@ final class JournalController extends Controller
         }
         $visits->update($id, $visit['user_id'], $this->values($v, $picker->save($city)));
 
-        return $this->redirect('/carnet', 'Escale modifiée.');
+        return $this->redirect('/carnet', t('Escale modifiée.'));
     }
 
     /** Confirmation page: deleting needs a second click on a POST form. */
@@ -68,7 +68,7 @@ final class JournalController extends Controller
     {
         $visit = $this->ownVisit($id, $visits);
 
-        return $this->render('pages/journal/delete', ['title' => 'Retirer une escale', 'visit' => $visit]);
+        return $this->render('pages/journal/delete', ['title' => t('Retirer une escale'), 'visit' => $visit]);
     }
 
     public function delete(int $id, VisitRepository $visits): Response
@@ -76,7 +76,7 @@ final class JournalController extends Controller
         $visit = $this->ownVisit($id, $visits);
         $visits->delete($id, $visit['user_id']);
 
-        return $this->redirect('/carnet', sprintf('%s a été retirée de votre carnet.', $visit['city']));
+        return $this->redirect('/carnet', t('%s a été retirée de votre carnet.', t($visit['city'])));
     }
 
     /** A visit of the logged-in member; someone else's visit is answered with 404. */
@@ -111,12 +111,12 @@ final class JournalController extends Controller
         $cityId = $city['id'] ?? null;
 
         $v = (new Validator($this->request->body))
-            ->rule('city_id', $city !== null, 'Choisissez une ville.')
-            ->rule('city_id', $cityId === null || !$visits->hasCity($userId, $cityId, $visitId), 'Cette ville est déjà dans votre carnet.')
+            ->rule('city_id', $city !== null, t('Choisissez une ville.'))
+            ->rule('city_id', $cityId === null || !$visits->hasCity($userId, $cityId, $visitId), t('Cette ville est déjà dans votre carnet.'))
             ->required('visited_on')
-            ->date('visited_on', '1950-01-01', date('Y-m-d'), 'Date invalide ou dans le futur.')
-            ->required('rating', 'Donnez une note.')
-            ->integer('rating', 1, 5, 'Note de 1 à 5.')
+            ->date('visited_on', '1950-01-01', date('Y-m-d'), t('Date invalide ou dans le futur.'))
+            ->required('rating', t('Donnez une note.'))
+            ->integer('rating', 1, 5, t('Note de 1 à 5.'))
             ->maxLength('note', 500);
 
         return [$v, $city];
@@ -140,7 +140,7 @@ final class JournalController extends Controller
         $query = $this->request->query('q') ?: (is_string($old['q'] ?? null) ? $old['q'] : '');
 
         return $this->render('pages/journal/form', [
-            'title' => $visit ? 'Modifier une escale' : 'Ajouter une escale',
+            'title' => $visit ? t('Modifier une escale') : t('Ajouter une escale'),
             'visit' => $visit,
             'path' => $path,
             'chosen' => $searching ? null : $chosen,

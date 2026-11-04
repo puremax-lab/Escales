@@ -5,7 +5,7 @@
 
 ### 👉 [Try the live demo](https://puremax-lab.alwaysdata.net/escales)
 
-Log in with **camille** / **password** (other demo accounts: `malik`, `lena`, same password), or create your own account.
+Log in with **camille** / **password** (other demo accounts: `malik`, `lena`, same password), or create your own account. The site is in French by default: click **EN** in the header for English.
 
 ![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)
 ![MySQL / SQLite](https://img.shields.io/badge/MySQL_%2F_SQLite-4479A1?logo=mysql&logoColor=white)
@@ -27,6 +27,7 @@ The app itself is a shared travel journal: visitors search cities and read revie
 - **Router** ([`Router`](src/Core/Router.php)) with URL parameters such as `/villes/{id}`, and 404 / 405 answers.
 - **MVC**: controllers in [`src/Controller`](src/Controller), SQL in repositories ([`src/Repository`](src/Repository)), HTML in PHP templates ([`templates`](templates)) rendered inside a shared layout.
 - **Composer** for PSR-4 autoloading and PHPUnit only: no runtime dependency.
+- **Two languages, without a library** ([`Lang`](src/Core/Lang.php), [`lang/en.php`](lang/en.php)): French is the source text, and a `t()` helper replaces it with its English version. The FR / EN switch is a plain link, so it works with no JavaScript: `/langue/en?retour=…` keeps the choice in the session and goes back to the page, and only ever to a path of this site.
 - **Works in a sub-folder** (online at `/escales`): the request finds its base path, and links, redirects and the session cookie follow it through a `url()` helper.
 
 **Web security, by hand**
@@ -55,6 +56,7 @@ The app itself is a shared travel journal: visitors search cities and read revie
 - **Journal**: add any city in the world you have visited (search, pick, rate), edit and delete entries, with a date, a 1 to 5 star rating and a review
 - **Members**: sign-up with a home city anywhere in the world, login, logout, public profile with statistics (cities, countries, average rating), profile editing
 - **Home page**: key figures, most visited cities, latest reviews
+- **French and English**: the interface, form errors, dates, the legal notice, and the demo countries, cities and reviews, with the language kept for the whole visit and after logging out. An English city name also works in the search (`brussels` finds Bruxelles)
 - **Legal notice**: publisher, host and the personal data the site keeps
 
 | Cities | City page |
@@ -68,6 +70,10 @@ The app itself is a shared travel journal: visitors search cities and read revie
 | Mobile: home | Mobile: profile |
 |---|---|
 | ![Mobile home](docs/screenshots/mobile-home.png) | ![Mobile profile](docs/screenshots/mobile-member.png) |
+
+## Good to know
+
+The screenshots show the English version. What a member writes stays in the language it was written in. Cities added from the world search keep their French name from Photon, because they are stored once and shared by everyone. The URLs stay in French (`/villes`, `/carnet`).
 
 ## The database
 
@@ -120,7 +126,7 @@ erDiagram
 
 ## Quality and stack
 
-- **PHPUnit tests**: unit tests for the router, validator, CSRF and sub-folder handling, and functional tests that send real requests through the whole app (sign-up, login, throttle, journal, world city search with a fake search service, permissions, escaping).
+- **83 PHPUnit tests**: unit tests for the router, validator, CSRF and sub-folder handling, and functional tests that send real requests through the whole app (sign-up, login, throttle, journal, world city search with a fake search service, permissions, escaping, language switch). One test reads the code and fails if a text has no English version.
 - **GitHub Actions** runs the tests on PHP 8.3 and 8.4 at every push.
 
 **Stack:** PHP 8.3+ (no framework), MySQL or SQLite, HTML and CSS with no library and no JavaScript (100% server-rendered PHP), PHPUnit 12, GitHub Actions. Online on alwaysdata (SQLite), served from a sub-folder.

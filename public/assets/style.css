@@ -58,6 +58,10 @@ input, select, textarea, button { font: inherit; color: inherit; }
 .nav a { padding: 0.45rem 0.8rem; border-radius: 9px; color: var(--muted); font-weight: 600; white-space: nowrap; }
 .nav a:hover { background: var(--bg); text-decoration: none; }
 .nav a.active { background: var(--primary-soft); color: var(--primary-dark); }
+.lang-switch { display: flex; gap: 0.1rem; font-size: 0.8rem; font-weight: 700; }
+.lang-switch a { padding: 0.25rem 0.4rem; border-radius: 7px; color: var(--muted); }
+.lang-switch a:hover { background: var(--bg); text-decoration: none; }
+.lang-switch a.active { background: var(--primary-soft); color: var(--primary-dark); }
 .account { display: flex; align-items: center; gap: 0.5rem; }
 .account form { margin: 0; }
 .account-name { display: flex; align-items: center; gap: 0.5rem; color: var(--text); font-weight: 600; }

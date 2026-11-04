@@ -6,19 +6,19 @@
  */
 $value = fn (string $field) => e(is_scalar($old[$field] ?? null) ? (string) $old[$field] : '');
 ?>
-<a href="<?= e(url('/carnet')) ?>" class="back">← Mon carnet</a>
+<a href="<?= e(url('/carnet')) ?>" class="back"><?= e(t('← Mon carnet')) ?></a>
 <h1><?= e($title) ?></h1>
 
 <?php if ($chosen === null): ?>
     <form method="get" action="<?= e(url($path)) ?>" class="card form form-narrow" role="search">
         <input type="hidden" name="changer" value="1">
         <div class="field">
-            <label for="q">Quelle ville avez-vous visitée ?</label>
+            <label for="q"><?= e(t('Quelle ville avez-vous visitée ?')) ?></label>
             <div class="search-row">
                 <input id="q" name="q" type="search" value="<?= e($query) ?>" placeholder="Kyoto, Dakar, Valparaíso…" required autofocus<?= invalid_attrs($errors, 'city_id') ?>>
-                <button type="submit" class="btn">Chercher</button>
+                <button type="submit" class="btn"><?= e(t('Chercher')) ?></button>
             </div>
-            <p class="hint">Toutes les villes du monde, grâce aux données d'<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>.</p>
+            <p class="hint"><?= t("Toutes les villes du monde, grâce aux données d'%s.", '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>') ?></p>
             <?= field_error($errors, 'city_id') ?>
         </div>
 
@@ -35,10 +35,10 @@ $value = fn (string $field) => e(is_scalar($old[$field] ?? null) ? (string) $old
                     <?php endforeach ?>
                 </ul>
             <?php else: ?>
-                <div class="empty">Aucune ville trouvée pour « <?= e($query) ?> ». Vérifiez l'orthographe.</div>
+                <div class="empty"><?= e(t("Aucune ville trouvée pour « %s ». Vérifiez l'orthographe.", $query)) ?></div>
             <?php endif ?>
             <?php if ($search['unavailable']): ?>
-                <p class="hint">La recherche mondiale ne répond pas pour le moment : seules les villes déjà notées sur Escales s'affichent.</p>
+                <p class="hint"><?= e(t("La recherche mondiale ne répond pas pour le moment : seules les villes déjà notées sur Escales s'affichent.")) ?></p>
             <?php endif ?>
         <?php endif ?>
     </form>
@@ -50,26 +50,26 @@ $value = fn (string $field) => e(is_scalar($old[$field] ?? null) ? (string) $old
         <?php endforeach ?>
 
         <div class="field">
-            <span class="label">Ville</span>
+            <span class="label"><?= e(t('Ville')) ?></span>
             <p class="chosen-city">
                 <span><strong><?= e($chosen['label']) ?></strong> <span class="muted small"><?= e($chosen['detail']) ?></span></span>
-                <a href="<?= e(url($path . '?changer=1')) ?>">Changer de ville</a>
+                <a href="<?= e(url($path . '?changer=1')) ?>"><?= e(t('Changer de ville')) ?></a>
             </p>
             <?= field_error($errors, 'city_id') ?>
         </div>
 
         <div class="field-row">
             <div class="field">
-                <label for="visited_on">Date de la visite</label>
+                <label for="visited_on"><?= e(t('Date de la visite')) ?></label>
                 <input id="visited_on" name="visited_on" type="date" max="<?= date('Y-m-d') ?>" value="<?= $value('visited_on') ?>" required<?= invalid_attrs($errors, 'visited_on') ?>>
                 <?= field_error($errors, 'visited_on') ?>
             </div>
             <fieldset class="field rating-field">
-                <legend>Note</legend>
+                <legend><?= e(t('Note')) ?></legend>
                 <div class="rating">
                     <?php for ($i = 5; $i >= 1; $i--): ?>
                         <input type="radio" id="rating-<?= $i ?>" name="rating" value="<?= $i ?>"<?= (string) ($old['rating'] ?? '') === (string) $i ? ' checked' : '' ?>>
-                        <label for="rating-<?= $i ?>" title="<?= $i ?> sur 5"><span class="sr-only"><?= $i ?> sur 5</span>★</label>
+                        <label for="rating-<?= $i ?>" title="<?= e(t('%d sur 5', $i)) ?>"><span class="sr-only"><?= e(t('%d sur 5', $i)) ?></span>★</label>
                     <?php endfor ?>
                 </div>
                 <?= field_error($errors, 'rating') ?>
@@ -77,15 +77,15 @@ $value = fn (string $field) => e(is_scalar($old[$field] ?? null) ? (string) $old
         </div>
 
         <div class="field">
-            <label for="note">Votre avis <span class="muted">(facultatif)</span></label>
-            <textarea id="note" name="note" rows="4" maxlength="500" placeholder="Ce que vous avez aimé, un conseil…"<?= invalid_attrs($errors, 'note') ?>><?= $value('note') ?></textarea>
-            <p class="hint">500 caractères maximum.</p>
+            <label for="note"><?= e(t('Votre avis')) ?> <span class="muted"><?= e(t('(facultatif)')) ?></span></label>
+            <textarea id="note" name="note" rows="4" maxlength="500" placeholder="<?= e(t('Ce que vous avez aimé, un conseil…')) ?>"<?= invalid_attrs($errors, 'note') ?>><?= $value('note') ?></textarea>
+            <p class="hint"><?= e(t('500 caractères maximum.')) ?></p>
             <?= field_error($errors, 'note') ?>
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn">Enregistrer</button>
-            <a href="<?= e(url('/carnet')) ?>" class="btn btn-ghost">Annuler</a>
+            <button type="submit" class="btn"><?= e(t('Enregistrer')) ?></button>
+            <a href="<?= e(url('/carnet')) ?>" class="btn btn-ghost"><?= e(t('Annuler')) ?></a>
         </div>
     </form>
 <?php endif ?>

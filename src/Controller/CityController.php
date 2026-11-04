@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Core\Lang;
 use App\Core\Response;
 use App\Repository\CityRepository;
 use App\Repository\CountryRepository;
@@ -16,14 +17,16 @@ final class CityController extends Controller
         $query = mb_substr($this->request->query('q'), 0, 80);
         $countryId = filter_var($this->request->query('pays'), FILTER_VALIDATE_INT) ?: null;
 
-        $total = $cities->countSearch($query, $countryId);
+        // Names are stored in French: an English name is looked up as its French version.
+        $search = Lang::toFrench($query);
+        $total = $cities->countSearch($search, $countryId);
         $pages = max(1, (int) ceil($total / self::PER_PAGE));
         $page = min($pages, max(1, (int) $this->request->query('page')));
 
         return $this->render('pages/cities/index', [
-            'title' => 'Villes',
-            'cities' => $cities->search($query, $countryId, self::PER_PAGE, ($page - 1) * self::PER_PAGE),
-            'countries' => $countries->all(),
+            'title' => t('Villes'),
+            'cities' => $cities->search($search, $countryId, self::PER_PAGE, ($page - 1) * self::PER_PAGE),
+            'countries' => $this->sortedByName($countries->all()),
             'query' => $query,
             'countryId' => $countryId,
             'total' => $total,
@@ -53,6 +56,14 @@ final class CityController extends Controller
         return $links;
     }
 
+    /** The database sorts countries by their French name; English needs its own order. */
+    private function sortedByName(array $countries): array
+    {
+        usort($countries, fn (array $a, array $b) => strcmp(t($a['name']), t($b['name'])));
+
+        return $countries;
+    }
+
     public function show(int $id, CityRepository $cities, VisitRepository $visits): Response
     {
         $city = $cities->find($id);
@@ -60,7 +71,7 @@ final class CityController extends Controller
         $userId = $this->auth->id();
 
         return $this->render('pages/cities/show', [
-            'title' => $city['name'],
+            'title' => t($city['name']),
             'city' => $city,
             'visits' => $visits->forCity($id, 20),
             'inJournal' => $userId !== null && $visits->hasCity($userId, $id),
