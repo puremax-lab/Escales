@@ -1,5 +1,5 @@
-<?php /** @var array $city @var ?string $anchor */ ?>
-<a href="<?= e(url('/villes/')) ?><?= $city['id'] ?>" class="card city-card"<?= !empty($anchor) ? ' id="' . e($anchor) . '"' : '' ?>>
+<?php /** @var array $city */ ?>
+<a href="<?= e(url('/villes/')) ?><?= $city['id'] ?>" class="card city-card">
     <span class="country-code" aria-hidden="true"><?= e($city['country_code']) ?></span>
     <div>
         <h3><?= e($city['name']) ?></h3>

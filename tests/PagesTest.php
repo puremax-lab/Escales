@@ -54,22 +54,28 @@ final class PagesTest extends AppTestCase
         $this->assertStringNotContainsString('Lisbonne', $body);
     }
 
-    public function testLoadsTheCityListPageByPage(): void
+    public function testPaginatesTheCityList(): void
     {
         $first = $this->get('/villes')->body;
         $this->assertSame(12, substr_count($first, 'class="card city-card"'));
-        $this->assertStringContainsString('<a href="/villes?page=2#suite-2" class="btn btn-outline">Charger la suite</a>', $first);
+        $this->assertStringContainsString('<a href="/villes" class="active" aria-current="page">1</a>', $first);
+        $this->assertStringContainsString('<a href="/villes?page=3">3</a>', $first);
+        $this->assertStringContainsString('<a href="/villes?page=2" rel="next" aria-label="Page suivante">', $first);
+        $this->assertStringNotContainsString('rel="prev"', $first);
         $this->assertStringNotContainsString('<script', $first, 'no JavaScript');
 
-        // Each "Charger la suite" keeps the cities already shown and jumps to the first new one.
-        $second = $this->get('/villes?page=2')->body;
-        $this->assertSame(24, substr_count($second, 'class="card city-card"'));
-        $this->assertSame(1, substr_count($second, 'id="suite-2"'));
-        $this->assertStringContainsString('href="/villes?page=3#suite-3"', $second);
-
         $last = $this->get('/villes?page=3')->body;
-        $this->assertSame(35, substr_count($last, 'class="card city-card"'));
-        $this->assertStringNotContainsString('Charger la suite', $last);
+        $this->assertSame(11, substr_count($last, 'class="card city-card"'));
+        $this->assertStringContainsString('<a href="/villes?page=2" rel="prev" aria-label="Page précédente">', $last);
+        $this->assertStringNotContainsString('rel="next"', $last);
+    }
+
+    public function testShortensALongPagination(): void
+    {
+        $this->assertSame([1, 2, 3], \App\Controller\CityController::pageLinks(1, 3));
+        $this->assertSame([1, 2, 3, null, 20], \App\Controller\CityController::pageLinks(1, 20));
+        $this->assertSame([1, null, 8, 9, 10, 11, 12, null, 20], \App\Controller\CityController::pageLinks(10, 20));
+        $this->assertSame([1, null, 18, 19, 20], \App\Controller\CityController::pageLinks(20, 20));
     }
 
     public function testCityPageShowsReviewsAndAverageRating(): void

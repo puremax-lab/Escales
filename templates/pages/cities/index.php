@@ -1,4 +1,4 @@
-<?php /** @var array $cities @var array $countries @var string $query @var ?int $countryId @var int $total @var int $page @var int $pages @var int $perPage */ ?>
+<?php /** @var array $cities @var array $countries @var string $query @var ?int $countryId @var int $total @var int $page @var int $pages @var list<?int> $pageLinks */ ?>
 <div class="page-head">
     <h1>Villes</h1>
     <p class="muted"><?= plural($total, 'ville') ?></p>
@@ -22,8 +22,8 @@
 
 <?php if ($cities): ?>
     <div class="grid">
-        <?php foreach ($cities as $i => $city): ?>
-            <?= $this->partial('partials/city-card', ['city' => $city, 'anchor' => $i > 0 && $i % $perPage === 0 ? 'suite-' . ($i / $perPage + 1) : null]) ?>
+        <?php foreach ($cities as $city): ?>
+            <?= $this->partial('partials/city-card', ['city' => $city]) ?>
         <?php endforeach ?>
     </div>
 <?php else: ?>
@@ -35,9 +35,23 @@
     </div>
 <?php endif ?>
 
-<?php if ($page < $pages): ?>
-    <?php $next = http_build_query(array_filter(['q' => $query, 'pays' => $countryId, 'page' => $page + 1])) ?>
-    <p class="load-more">
-        <a href="<?= e(url('/villes')) ?>?<?= e($next) ?>#suite-<?= $page + 1 ?>" class="btn btn-outline">Charger la suite</a>
-    </p>
+<?php if ($pages > 1): ?>
+    <?php $pageUrl = fn (int $n) => url('/villes') . (($params = http_build_query(array_filter(['q' => $query, 'pays' => $countryId, 'page' => $n > 1 ? $n : null]))) ? '?' . $params : '') ?>
+    <nav class="pagination" aria-label="Pages">
+        <?php if ($page > 1): ?>
+            <a href="<?= e($pageUrl($page - 1)) ?>" rel="prev" aria-label="Page précédente">←<span class="page-word"> Précédent</span></a>
+        <?php endif ?>
+        <?php foreach ($pageLinks as $n): ?>
+            <?php if ($n === null): ?>
+                <span class="gap" aria-hidden="true">…</span>
+            <?php elseif ($n === $page): ?>
+                <a href="<?= e($pageUrl($n)) ?>" class="active" aria-current="page"><?= $n ?></a>
+            <?php else: ?>
+                <a href="<?= e($pageUrl($n)) ?>"><?= $n ?></a>
+            <?php endif ?>
+        <?php endforeach ?>
+        <?php if ($page < $pages): ?>
+            <a href="<?= e($pageUrl($page + 1)) ?>" rel="next" aria-label="Page suivante"><span class="page-word">Suivant </span>→</a>
+        <?php endif ?>
+    </nav>
 <?php endif ?>

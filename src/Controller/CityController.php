@@ -20,19 +20,37 @@ final class CityController extends Controller
         $pages = max(1, (int) ceil($total / self::PER_PAGE));
         $page = min($pages, max(1, (int) $this->request->query('page')));
 
-        // "Charger la suite" without JavaScript: page N shows the first N batches, and the link
-        // jumps to the first new city, so the visitor keeps their place.
         return $this->render('pages/cities/index', [
             'title' => 'Villes',
-            'cities' => $cities->search($query, $countryId, $page * self::PER_PAGE, 0),
-            'perPage' => self::PER_PAGE,
+            'cities' => $cities->search($query, $countryId, self::PER_PAGE, ($page - 1) * self::PER_PAGE),
             'countries' => $countries->all(),
             'query' => $query,
             'countryId' => $countryId,
             'total' => $total,
             'page' => $page,
             'pages' => $pages,
+            'pageLinks' => self::pageLinks($page, $pages),
         ]);
+    }
+
+    /**
+     * Page numbers to show: the first, the last, and two on each side of the current one.
+     * A gap between them is marked with null ("…").
+     * @return list<?int>
+     */
+    public static function pageLinks(int $page, int $pages): array
+    {
+        $links = [];
+        foreach (range(1, $pages) as $n) {
+            if ($n === 1 || $n === $pages || abs($n - $page) <= 2) {
+                if ($links && end($links) !== null && end($links) < $n - 1) {
+                    $links[] = null;
+                }
+                $links[] = $n;
+            }
+        }
+
+        return $links;
     }
 
     public function show(int $id, CityRepository $cities, VisitRepository $visits): Response

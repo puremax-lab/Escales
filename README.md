@@ -51,7 +51,7 @@ The app itself is a shared travel journal: visitors search cities and read revie
 
 ## The app
 
-- **Cities**: search by city or country, filter by country, a "Charger la suite" link that keeps the cities already shown and jumps to the new ones (no JavaScript), page per city with reviews and average rating
+- **Cities**: search by city or country, filter by country, pagination (1, 2, 3… with previous / next, shortened when there are many pages), page per city with reviews and average rating
 - **Journal**: add any city in the world you have visited (search, pick, rate), edit and delete entries, with a date, a 1 to 5 star rating and a review
 - **Members**: sign-up with a home city anywhere in the world, login, logout, public profile with statistics (cities, countries, average rating), profile editing
 - **Home page**: key figures, most visited cities, latest reviews
