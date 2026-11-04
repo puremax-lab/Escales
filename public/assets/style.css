@@ -189,6 +189,14 @@ fieldset.field { border: 0; padding: 0; margin: 0 0 1.1rem; }
 .error { color: var(--danger); font-size: 0.875rem; margin: 0.35rem 0 0; }
 .hint { color: var(--muted); font-size: 0.85rem; margin: 0.35rem 0 0; }
 .form-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+.field .label { display: block; font-weight: 700; margin-bottom: 0.35rem; }
+.search-row { display: flex; gap: 0.5rem; }
+.search-row input { flex: 1; min-width: 0; }
+.place-results { list-style: none; margin: 0.5rem 0 0; padding: 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.place-results li + li { border-top: 1px solid var(--border); }
+.place-results a { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.6rem; padding: 0.75rem 1rem; color: var(--text); }
+.place-results a:hover { background: var(--primary-soft); text-decoration: none; }
+.chosen-city { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem; margin: 0; padding: 0.75rem 1rem; background: var(--primary-soft); border-radius: 10px; }
 
 /* Star rating: radios in reverse order so "this star and the ones before" can be styled with ~ */
 .rating { display: inline-flex; flex-direction: row-reverse; gap: 0.15rem; }

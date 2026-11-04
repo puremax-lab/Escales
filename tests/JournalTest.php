@@ -36,8 +36,106 @@ final class JournalTest extends AppTestCase
     public function testPreselectsTheCityFromTheCityPage(): void
     {
         $this->loginAs('camille');
+        $body = $this->get('/carnet/ajouter?ville=20')->body;
 
-        $this->assertStringContainsString('<option value="20" selected>Lyon</option>', $this->get('/carnet/ajouter?ville=20')->body);
+        $this->assertStringContainsString('<strong>Lyon</strong>', $body);
+        $this->assertStringContainsString('<input type="hidden" name="city_id" value="20">', $body);
+    }
+
+    public function testStartsWithACitySearch(): void
+    {
+        $this->loginAs('camille');
+        $body = $this->get('/carnet/ajouter')->body;
+
+        $this->assertStringContainsString('Quelle ville avez-vous visitée ?', $body);
+        $this->assertStringNotContainsString('name="rating"', $body);
+    }
+
+    public function testFindsCitiesAnywhereInTheWorld(): void
+    {
+        $this->loginAs('camille');
+        $body = $this->get('/carnet/ajouter?q=Kyo')->body;
+
+        $this->assertStringContainsString('<strong>Kyoto</strong>', $body);
+        $this->assertStringContainsString('Préfecture de Kyoto · Japon', $body);
+        $this->assertStringContainsString('/carnet/ajouter?lieu=R2689&amp;q=Kyo', $body);
+        $this->assertStringContainsString('<strong>Kyotango</strong>', $body);
+    }
+
+    public function testSearchShowsASavedCityOnceAndKeepsNamesakes(): void
+    {
+        $this->loginAs('camille');
+        $body = $this->get('/carnet/ajouter?q=Paris')->body;
+
+        // The Paris of the demo data and the Paris of the world search are the same city.
+        $this->assertSame(1, substr_count($body, '/carnet/ajouter?ville=19"'));
+        $this->assertStringNotContainsString('lieu=R71525', $body);
+        $this->assertStringContainsString('Texas · États-Unis', $body);
+    }
+
+    public function testAddsACityThatWasNotInEscales(): void
+    {
+        $this->loginAs('camille');
+        $this->assertStringContainsString('<strong>Kyoto</strong>', $this->get('/carnet/ajouter?lieu=R2689&q=Kyo')->body);
+
+        $response = $this->post('/carnet/ajouter', ['place' => 'R2689', 'q' => 'Kyo'] + $this->visit(['city_id' => '']));
+
+        $this->assertRedirect($response, '/carnet');
+        $this->assertSame(1, $this->countRows("SELECT COUNT(*) FROM cities ci JOIN countries co ON co.id = ci.country_id
+            WHERE ci.name = 'Kyoto' AND ci.region = 'Préfecture de Kyoto' AND ci.place_ref = 'R2689' AND co.name = 'Japon' AND co.code = 'JP'"));
+        $this->assertSame(1, $this->countRows("SELECT COUNT(*) FROM visits v JOIN cities ci ON ci.id = v.city_id WHERE v.user_id = 1 AND ci.name = 'Kyoto'"));
+        $this->assertStringContainsString('Kyoto', $this->get('/villes?q=Kyoto')->body);
+    }
+
+    public function testASecondMemberReusesTheSameCity(): void
+    {
+        $this->loginAs('camille');
+        $this->post('/carnet/ajouter', ['place' => 'R2689', 'q' => 'Kyoto'] + $this->visit(['city_id' => '']));
+        $this->loginAs('malik');
+        $this->post('/carnet/ajouter', ['place' => 'R2689', 'q' => 'Kyoto'] + $this->visit(['city_id' => '']));
+
+        $this->assertSame(1, $this->countRows("SELECT COUNT(*) FROM cities WHERE place_ref = 'R2689'"));
+        $this->assertSame(1, $this->countRows("SELECT COUNT(*) FROM countries WHERE code = 'JP'"));
+        $this->assertSame(2, $this->countRows("SELECT COUNT(*) FROM visits v JOIN cities ci ON ci.id = v.city_id WHERE ci.place_ref = 'R2689'"));
+    }
+
+    public function testAWorldCityMatchingADemoCityIsNotDuplicated(): void
+    {
+        $this->loginAs('lena');
+
+        $this->assertRedirect($this->post('/carnet/ajouter', ['place' => 'R71525', 'q' => 'Paris'] + $this->visit(['city_id' => ''])), '/carnet');
+        $this->assertSame(1, $this->countRows("SELECT COUNT(*) FROM cities WHERE name = 'Paris'"));
+        $this->assertSame(1, $this->countRows("SELECT COUNT(*) FROM visits WHERE user_id = 3 AND city_id = 19"));
+    }
+
+    public function testRefusesAMadeUpPlace(): void
+    {
+        $this->loginAs('camille');
+
+        $response = $this->post('/carnet/ajouter', ['place' => 'R999', 'q' => 'Kyoto', 'city_id' => ''] + $this->visit(['city_id' => '']));
+
+        $this->assertSame(422, $response->status);
+        $this->assertStringContainsString('Choisissez une ville.', $response->body);
+        $this->assertSame(0, $this->countRows("SELECT COUNT(*) FROM cities WHERE place_ref = 'R999'"));
+    }
+
+    public function testStillSearchesSavedCitiesWhenTheWorldSearchIsDown(): void
+    {
+        $this->loginAs('camille');
+        $this->places->down = true;
+        $body = $this->get('/carnet/ajouter?q=Lyon')->body;
+
+        $this->assertStringContainsString('<strong>Lyon</strong>', $body);
+        $this->assertStringContainsString('La recherche mondiale ne répond pas', $body);
+    }
+
+    public function testChangesTheCityOfAVisit(): void
+    {
+        $this->loginAs('camille');
+
+        $this->assertStringContainsString('Quelle ville avez-vous visitée ?', $this->get('/carnet/1/modifier?changer=1')->body);
+        $this->assertRedirect($this->post('/carnet/1/modifier', ['place' => 'R2689', 'q' => 'Kyoto'] + $this->visit(['city_id' => ''])), '/carnet');
+        $this->assertSame(1, $this->countRows("SELECT COUNT(*) FROM visits v JOIN cities ci ON ci.id = v.city_id WHERE v.id = 1 AND ci.name = 'Kyoto'"));
     }
 
     public function testRefusesInvalidVisits(): void

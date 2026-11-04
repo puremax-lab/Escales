@@ -6,7 +6,7 @@
     <div>
         <h1><?= e($city['name']) ?></h1>
         <p class="muted">
-            <a href="<?= e(url('/villes?pays=')) ?><?= $city['country_id'] ?>"><?= e($city['country']) ?></a><?= $city['is_capital'] ? ' · capitale' : '' ?>
+            <?= $city['region'] !== '' ? e($city['region']) . ' · ' : '' ?><a href="<?= e(url('/villes?pays=')) ?><?= $city['country_id'] ?>"><?= e($city['country']) ?></a><?= $city['is_capital'] ? ' · capitale' : '' ?>
         </p>
     </div>
     <div class="city-hero-action">

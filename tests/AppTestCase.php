@@ -18,12 +18,14 @@ abstract class AppTestCase extends TestCase
 {
     protected PDO $pdo;
     protected array $sessionData = [];
+    protected FakePlaceFinder $places;
 
     protected function setUp(): void
     {
         $this->pdo = Database::connect('sqlite::memory:');
         Database::install($this->pdo);
         $this->sessionData = [];
+        $this->places = new FakePlaceFinder();
     }
 
     protected function get(string $uri): Response
@@ -73,6 +75,6 @@ abstract class AppTestCase extends TestCase
 
     private function app(): App
     {
-        return new App($this->pdo, new Session($this->sessionData), debug: true);
+        return new App($this->pdo, new Session($this->sessionData), debug: true, places: $this->places);
     }
 }

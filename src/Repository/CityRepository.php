@@ -7,13 +7,13 @@ use PDO;
 final class CityRepository
 {
     /** City columns with country and visit statistics. */
-    private const SELECT = 'SELECT ci.id, ci.name, ci.is_capital, co.id AS country_id, co.name AS country,
+    private const SELECT = 'SELECT ci.id, ci.name, ci.region, ci.is_capital, co.id AS country_id, co.name AS country,
             co.code AS country_code, COUNT(v.id) AS visit_count, AVG(v.rating) AS average_rating
         FROM cities ci
         JOIN countries co ON co.id = ci.country_id
         LEFT JOIN visits v ON v.city_id = ci.id';
 
-    private const GROUP = ' GROUP BY ci.id, ci.name, ci.is_capital, co.id, co.name, co.code';
+    private const GROUP = ' GROUP BY ci.id, ci.name, ci.region, ci.is_capital, co.id, co.name, co.code';
 
     public function __construct(private readonly PDO $pdo)
     {
@@ -33,6 +33,41 @@ final class CityRepository
         $stmt->execute([$id]);
 
         return (bool) $stmt->fetchColumn();
+    }
+
+    /** Id of the city already saved for a place of the world search, or null. */
+    public function idForPlace(array $place): ?int
+    {
+        $stmt = $this->pdo->prepare('SELECT id FROM cities WHERE place_ref = ?');
+        $stmt->execute([$place['ref']]);
+        $id = $stmt->fetchColumn();
+        if ($id === false && $place['kind'] === 'city') {
+            // The demo cities have no reference: a big city with the same name in the same country is the same one.
+            $stmt = $this->pdo->prepare(
+                'SELECT ci.id FROM cities ci JOIN countries co ON co.id = ci.country_id
+                 WHERE ci.place_ref IS NULL AND co.code = ? AND ci.name = ?'
+            );
+            $stmt->execute([$place['country_code'], $place['name']]);
+            $id = $stmt->fetchColumn();
+        }
+
+        return $id === false ? null : (int) $id;
+    }
+
+    /** Saves a city found by the world search, with its country if it is new, and returns its id. */
+    public function createFromPlace(array $place): int
+    {
+        $id = $this->idForPlace($place);
+        if ($id !== null) {
+            $this->pdo->prepare('UPDATE cities SET place_ref = ? WHERE id = ? AND place_ref IS NULL')->execute([$place['ref'], $id]);
+
+            return $id;
+        }
+
+        $this->pdo->prepare('INSERT INTO cities (country_id, name, region, place_ref) VALUES (?, ?, ?, ?)')
+            ->execute([$this->countryId($place['country_code'], $place['country']), $place['name'], $place['region'], $place['ref']]);
+
+        return (int) $this->pdo->lastInsertId();
     }
 
     /** Cities matching a search text and/or a country, most visited first. */
@@ -72,14 +107,16 @@ final class CityRepository
     public function groupedByCountry(): array
     {
         $rows = $this->pdo->query(
-            'SELECT ci.id, ci.name, co.name AS country
+            'SELECT ci.id, ci.name, ci.region, co.name AS country
              FROM cities ci JOIN countries co ON co.id = ci.country_id
              ORDER BY co.name, ci.name'
         )->fetchAll();
 
         $groups = [];
         foreach ($rows as $row) {
-            $groups[$row['country']][] = ['id' => (int) $row['id'], 'name' => $row['name']];
+            // Two towns can share a name: the region tells them apart.
+            $name = $row['region'] !== '' ? $row['name'] . ' (' . $row['region'] . ')' : $row['name'];
+            $groups[$row['country']][] = ['id' => (int) $row['id'], 'name' => $name];
         }
 
         return $groups;
@@ -88,6 +125,20 @@ final class CityRepository
     public function count(): int
     {
         return (int) $this->pdo->query('SELECT COUNT(*) FROM cities')->fetchColumn();
+    }
+
+    private function countryId(string $code, string $name): int
+    {
+        $stmt = $this->pdo->prepare('SELECT id FROM countries WHERE code = ?');
+        $stmt->execute([$code]);
+        $id = $stmt->fetchColumn();
+        if ($id !== false) {
+            return (int) $id;
+        }
+        // The nationality is only known for the demo countries.
+        $this->pdo->prepare("INSERT INTO countries (name, code, nationality) VALUES (?, ?, '')")->execute([$name, $code]);
+
+        return (int) $this->pdo->lastInsertId();
     }
 
     private function filters(string $query, ?int $countryId): array

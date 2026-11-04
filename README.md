@@ -42,10 +42,16 @@ The app itself is a shared travel journal: visitors search cities and read revie
 - **Server-side validation** ([`Validator`](src/Core/Validator.php)): required fields, lengths, real dates, unique pseudo, rating 1 to 5. The form keeps the typed values and shows an error under each field.
 - **Database constraints**: foreign keys, unique keys (one entry per city per member), a `CHECK` on the rating, and journal entries deleted with their member.
 
+**An external API, without a library**
+- **Every city in the world**: the journal searches [Photon](https://photon.komoot.io), a geocoder built on OpenStreetMap data, with names in French ([`PhotonPlaceFinder`](src/Places/PhotonPlaceFinder.php)). A plain `file_get_contents` with a timeout, no SDK.
+- **Trust nothing from the browser**: the form only sends the place reference; the server looks the city up again before saving it, so a made-up city is refused.
+- **Saved on first use**: a city enters the database the first time a member notes it, with its country if it is new, and is shared by everyone after that.
+- **Works when the service is down**: the search still shows the cities already in Escales, with a message.
+
 ## The app
 
 - **Cities**: search by city or country, filter by country, pagination, page per city with reviews and average rating
-- **Journal**: add, edit and delete the cities you have visited, with a date, a 1 to 5 star rating and a review
+- **Journal**: add any city in the world you have visited (search, pick, rate), edit and delete entries, with a date, a 1 to 5 star rating and a review
 - **Members**: sign-up, login, logout, public profile with statistics (cities, countries, average rating), profile editing
 - **Home page**: key figures, most visited cities, latest reviews
 - **Legal notice**: publisher, host and the personal data the site keeps
@@ -81,7 +87,9 @@ erDiagram
         int id PK
         int country_id FK
         varchar name
+        varchar region
         boolean is_capital
+        varchar place_ref UK "OpenStreetMap reference"
     }
     users {
         int id PK
@@ -104,13 +112,14 @@ erDiagram
     }
 ```
 
-- A member lives in one city, and their nationality comes from that city's country.
+- A member lives in one city, and their nationality comes from that city's country (known for the demo countries).
+- A city added from the world search keeps its OpenStreetMap reference (`place_ref`, unique): two members who note it share one row, and two towns with the same name in one country stay apart.
 - A member has at most one journal entry per city (`UNIQUE (user_id, city_id)`).
 - A `login_attempts` table, not linked to the others, stores failed logins for the throttle.
 
 ## Quality and stack
 
-- **PHPUnit tests**: unit tests for the router, validator, CSRF and sub-folder handling, and functional tests that send real requests through the whole app (sign-up, login, throttle, journal, permissions, escaping).
+- **PHPUnit tests**: unit tests for the router, validator, CSRF and sub-folder handling, and functional tests that send real requests through the whole app (sign-up, login, throttle, journal, world city search with a fake search service, permissions, escaping).
 - **GitHub Actions** runs the tests on PHP 8.3 and 8.4 at every push.
 
 **Stack:** PHP 8.3+ (no framework), MySQL or SQLite, HTML and CSS with no library and no JavaScript, PHPUnit 12, GitHub Actions. Online on alwaysdata (SQLite), served from a sub-folder.
@@ -133,6 +142,8 @@ composer serve
 
 **With MySQL:** create an empty `escales` database, copy `config/config.local.php.dist` to `config/config.local.php` with your credentials, then run `php bin/setup.php`.
 
+**Upgrading a database created before the world city search:** run `database/migrations/2026-11-world-cities.sqlite.sql` (or `.mysql.sql`) once.
+
 **Run the tests:**
 
 ```bash
@@ -142,3 +153,7 @@ composer test
 ## Author
 
 **puremax-lab**: [github.com/puremax-lab](https://github.com/puremax-lab)
+
+## Credits
+
+City names and places © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright) (ODbL), searched through [Photon](https://photon.komoot.io) by komoot.

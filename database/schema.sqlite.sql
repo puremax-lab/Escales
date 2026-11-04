@@ -11,9 +11,12 @@ CREATE TABLE cities (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     country_id INTEGER NOT NULL REFERENCES countries (id),
     name TEXT NOT NULL,
+    region TEXT NOT NULL DEFAULT '',
     is_capital INTEGER NOT NULL DEFAULT 0,
-    UNIQUE (country_id, name)
+    place_ref TEXT UNIQUE
 );
+
+CREATE INDEX idx_city_country ON cities (country_id, name);
 
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

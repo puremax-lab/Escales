@@ -27,7 +27,12 @@
         <?php endforeach ?>
     </div>
 <?php else: ?>
-    <div class="empty">Aucune ville ne correspond à votre recherche.</div>
+    <div class="empty">
+        <p>Aucune ville ne correspond à votre recherche.</p>
+        <?php if ($query !== ''): ?>
+            <a href="<?= e(url('/carnet/ajouter?' . http_build_query(['q' => $query]))) ?>" class="btn btn-outline">Ajouter « <?= e($query) ?> » à mon carnet</a>
+        <?php endif ?>
+    </div>
 <?php endif ?>
 
 <?php if ($pages > 1): ?>

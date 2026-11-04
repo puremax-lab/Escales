@@ -16,6 +16,8 @@ use App\Core\Response;
 use App\Core\Router;
 use App\Core\Session;
 use App\Core\View;
+use App\Places\PhotonPlaceFinder;
+use App\Places\PlaceFinder;
 use App\Repository\CityRepository;
 use App\Repository\CountryRepository;
 use App\Repository\LoginThrottle;
@@ -34,12 +36,15 @@ final class App
     private readonly UserRepository $users;
     private readonly VisitRepository $visits;
     private readonly LoginThrottle $throttle;
+    private readonly PlaceFinder $places;
 
     public function __construct(
         PDO $pdo,
         private readonly Session $session,
         private readonly bool $debug = false,
+        ?PlaceFinder $places = null,
     ) {
+        $this->places = $places ?? new PhotonPlaceFinder();
         $this->cities = new CityRepository($pdo);
         $this->countries = new CountryRepository($pdo);
         $this->users = new UserRepository($pdo);
@@ -101,10 +106,10 @@ final class App
         $r->post('/deconnexion', fn () => $auth()->logout());
 
         $r->get('/carnet', fn () => $journal()->index($this->visits));
-        $r->get('/carnet/ajouter', fn () => $journal()->create($this->cities));
-        $r->post('/carnet/ajouter', fn () => $journal()->store($this->cities, $this->visits));
-        $r->get('/carnet/{id}/modifier', fn (string $id) => $journal()->edit((int) $id, $this->cities, $this->visits));
-        $r->post('/carnet/{id}/modifier', fn (string $id) => $journal()->update((int) $id, $this->cities, $this->visits));
+        $r->get('/carnet/ajouter', fn () => $journal()->create($this->cities, $this->places));
+        $r->post('/carnet/ajouter', fn () => $journal()->store($this->cities, $this->places, $this->visits));
+        $r->get('/carnet/{id}/modifier', fn (string $id) => $journal()->edit((int) $id, $this->cities, $this->places, $this->visits));
+        $r->post('/carnet/{id}/modifier', fn (string $id) => $journal()->update((int) $id, $this->cities, $this->places, $this->visits));
         $r->get('/carnet/{id}/supprimer', fn (string $id) => $journal()->confirmDelete((int) $id, $this->visits));
         $r->post('/carnet/{id}/supprimer',fn (string $id) => $journal()->delete((int) $id, $this->visits));
 

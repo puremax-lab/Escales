@@ -14,9 +14,13 @@ CREATE TABLE cities (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     country_id INT UNSIGNED NOT NULL,
     name VARCHAR(80) NOT NULL,
+    region VARCHAR(80) NOT NULL DEFAULT '',
     is_capital TINYINT(1) NOT NULL DEFAULT 0,
+    -- OpenStreetMap reference of a city added from the world search ("R58274"), empty for the demo cities.
+    place_ref VARCHAR(24) NULL,
     PRIMARY KEY (id),
-    UNIQUE KEY uniq_city_per_country (country_id, name),
+    UNIQUE KEY uniq_city_place (place_ref),
+    KEY idx_city_country (country_id, name),
     CONSTRAINT fk_city_country FOREIGN KEY (country_id) REFERENCES countries (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

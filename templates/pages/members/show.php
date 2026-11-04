@@ -6,7 +6,7 @@
         <p class="muted">@<?= e($member['pseudo']) ?> · inscrit depuis le <?= format_date($member['created_at']) ?></p>
         <ul class="profile-facts">
             <li><span>Ville</span><?= e($member['city']) ?>, <?= e($member['country']) ?></li>
-            <li><span>Nationalité</span><?= e($member['nationality']) ?></li>
+            <?php if ($member['nationality'] !== ''): ?><li><span>Nationalité</span><?= e($member['nationality']) ?></li><?php endif ?>
             <li><span>Âge</span><?= age($member['birth_date']) ?> ans</li>
         </ul>
     </div>

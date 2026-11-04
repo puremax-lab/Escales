@@ -4,7 +4,7 @@
     <div>
         <h3><?= e($city['name']) ?></h3>
         <p class="muted small">
-            <?= e($city['country']) ?><?= $city['is_capital'] ? ' · capitale' : '' ?>
+            <?= $city['region'] !== '' ? e($city['region']) . ' · ' : '' ?><?= e($city['country']) ?><?= $city['is_capital'] ? ' · capitale' : '' ?>
         </p>
     </div>
     <div class="city-card-stats">
