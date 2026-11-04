@@ -58,13 +58,17 @@ final class PagesTest extends AppTestCase
     {
         $first = $this->get('/villes')->body;
         $this->assertSame(12, substr_count($first, 'class="card city-card"'));
-        // Without JavaScript, "Charger la suite" opens the next page; with it, the next cards are added on scroll.
-        $this->assertStringContainsString('<a href="/villes?page=2" class="btn btn-outline" data-load-more="#city-grid">Charger la suite</a>', $first);
-        $this->assertStringContainsString('/assets/load-more.js', $first);
-        $this->assertStringContainsString('href="/villes?page=3"', $this->get('/villes?page=2')->body);
+        $this->assertStringContainsString('<a href="/villes?page=2#suite-2" class="btn btn-outline">Charger la suite</a>', $first);
+        $this->assertStringNotContainsString('<script', $first, 'no JavaScript');
+
+        // Each "Charger la suite" keeps the cities already shown and jumps to the first new one.
+        $second = $this->get('/villes?page=2')->body;
+        $this->assertSame(24, substr_count($second, 'class="card city-card"'));
+        $this->assertSame(1, substr_count($second, 'id="suite-2"'));
+        $this->assertStringContainsString('href="/villes?page=3#suite-3"', $second);
 
         $last = $this->get('/villes?page=3')->body;
-        $this->assertSame(11, substr_count($last, 'class="card city-card"'));
+        $this->assertSame(35, substr_count($last, 'class="card city-card"'));
         $this->assertStringNotContainsString('Charger la suite', $last);
     }
 

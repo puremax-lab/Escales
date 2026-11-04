@@ -20,9 +20,12 @@ final class CityController extends Controller
         $pages = max(1, (int) ceil($total / self::PER_PAGE));
         $page = min($pages, max(1, (int) $this->request->query('page')));
 
+        // "Charger la suite" without JavaScript: page N shows the first N batches, and the link
+        // jumps to the first new city, so the visitor keeps their place.
         return $this->render('pages/cities/index', [
             'title' => 'Villes',
-            'cities' => $cities->search($query, $countryId, self::PER_PAGE, ($page - 1) * self::PER_PAGE),
+            'cities' => $cities->search($query, $countryId, $page * self::PER_PAGE, 0),
+            'perPage' => self::PER_PAGE,
             'countries' => $countries->all(),
             'query' => $query,
             'countryId' => $countryId,

@@ -1,4 +1,4 @@
-<?php /** @var array $cities @var array $countries @var string $query @var ?int $countryId @var int $total @var int $page @var int $pages */ ?>
+<?php /** @var array $cities @var array $countries @var string $query @var ?int $countryId @var int $total @var int $page @var int $pages @var int $perPage */ ?>
 <div class="page-head">
     <h1>Villes</h1>
     <p class="muted"><?= plural($total, 'ville') ?></p>
@@ -21,9 +21,9 @@
 </form>
 
 <?php if ($cities): ?>
-    <div class="grid" id="city-grid">
-        <?php foreach ($cities as $city): ?>
-            <?= $this->partial('partials/city-card', ['city' => $city]) ?>
+    <div class="grid">
+        <?php foreach ($cities as $i => $city): ?>
+            <?= $this->partial('partials/city-card', ['city' => $city, 'anchor' => $i > 0 && $i % $perPage === 0 ? 'suite-' . ($i / $perPage + 1) : null]) ?>
         <?php endforeach ?>
     </div>
 <?php else: ?>
@@ -38,7 +38,6 @@
 <?php if ($page < $pages): ?>
     <?php $next = http_build_query(array_filter(['q' => $query, 'pays' => $countryId, 'page' => $page + 1])) ?>
     <p class="load-more">
-        <a href="<?= e(url('/villes')) ?>?<?= e($next) ?>" class="btn btn-outline" data-load-more="#city-grid">Charger la suite</a>
+        <a href="<?= e(url('/villes')) ?>?<?= e($next) ?>#suite-<?= $page + 1 ?>" class="btn btn-outline">Charger la suite</a>
     </p>
-    <script src="<?= e(url('/assets/load-more.js')) ?>" defer></script>
 <?php endif ?>
