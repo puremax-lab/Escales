@@ -18,7 +18,7 @@ $value = fn (string $field) => e(is_scalar($old[$field] ?? null) ? (string) $old
                 <input id="q" name="q" type="search" value="<?= e($query) ?>" placeholder="Kyoto, Dakar, Valparaíso…" required autofocus<?= invalid_attrs($errors, 'city_id') ?>>
                 <button type="submit" class="btn"><?= e(t('Chercher')) ?></button>
             </div>
-            <p class="hint"><?= t("Toutes les villes du monde, grâce aux données d'%s.", '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>') ?></p>
+            <p class="hint"><?= t("Des villes du monde entier, grâce aux données d'%s.", '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>') ?></p>
             <?= field_error($errors, 'city_id') ?>
         </div>
 

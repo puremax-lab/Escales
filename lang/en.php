@@ -127,7 +127,7 @@ return [
     'Annuler' => 'Cancel',
     'Quelle ville avez-vous visitée ?' => 'Which city did you visit?',
     'Chercher' => 'Search',
-    "Toutes les villes du monde, grâce aux données d'%s." => 'Every city in the world, thanks to %s data.',
+    "Des villes du monde entier, grâce aux données d'%s." => 'Cities worldwide, thanks to %s data.',
     'Aucune ville trouvée pour « %s ». Vérifiez l\'orthographe.' => 'No city found for "%s". Check the spelling.',
     "La recherche mondiale ne répond pas pour le moment : seules les villes déjà notées sur Escales s'affichent." => 'The world search is not answering at the moment: only cities already rated on Escales are shown.',
     'Ville' => 'City',
@@ -167,7 +167,7 @@ return [
     // City field
     'Ville où vous habitez' => 'City where you live',
     'Choisissez votre ville' => 'Choose your city',
-    'Tapez le nom de votre ville, puis « Chercher » : toutes les villes du monde, grâce à %s.' => 'Type the name of your city, then "Search": every city in the world, thanks to %s.',
+    'Tapez le nom de votre ville, puis « Chercher » : des villes du monde entier, grâce à %s.' => 'Type the name of your city, then "Search": cities worldwide, thanks to %s.',
 
     // Demo countries
     'Allemagne' => 'Germany',

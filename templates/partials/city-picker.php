@@ -25,7 +25,7 @@
     <?php elseif ($cityField['searched']): ?>
         <p class="hint"><?= e(t("Aucune ville trouvée pour « %s ». Vérifiez l'orthographe.", $cityField['query'])) ?></p>
     <?php else: ?>
-        <p class="hint"><?= t('Tapez le nom de votre ville, puis « Chercher » : toutes les villes du monde, grâce à %s.', '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>') ?></p>
+        <p class="hint"><?= t('Tapez le nom de votre ville, puis « Chercher » : des villes du monde entier, grâce à %s.', '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>') ?></p>
     <?php endif ?>
     <?php if ($cityField['unavailable']): ?>
         <p class="hint"><?= e(t("La recherche mondiale ne répond pas pour le moment : seules les villes déjà notées sur Escales s'affichent.")) ?></p>
