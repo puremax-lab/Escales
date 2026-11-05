@@ -21,6 +21,12 @@ final class Lang
         self::$locale = in_array($locale, self::LOCALES, true) ? $locale : 'fr';
     }
 
+    /** The language of a first visit: English for an English browser, French for any other language. */
+    public static function fromBrowser(string $acceptLanguage): string
+    {
+        return preg_match('/^\s*en\b/i', $acceptLanguage) ? 'en' : 'fr';
+    }
+
     /** The text in the current language. A text with no translation is returned as it is. */
     public static function translate(string $text): string
     {

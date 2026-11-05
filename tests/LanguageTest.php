@@ -25,6 +25,31 @@ final class LanguageTest extends AppTestCase
         $this->assertStringContainsString('Gardez une trace de chaque escale.', $body);
     }
 
+    #[DataProvider('browserLanguages')]
+    public function testAFirstVisitFollowsTheBrowser(string $acceptLanguage, string $locale): void
+    {
+        $this->assertStringContainsString('<html lang="' . $locale . '">', $this->get('/', $acceptLanguage)->body);
+    }
+
+    public static function browserLanguages(): array
+    {
+        return [
+            'English' => ['en-GB,en;q=0.9', 'en'],
+            'plain English' => ['en', 'en'],
+            'French' => ['fr-BE,fr;q=0.9,en;q=0.8', 'fr'],
+            'German' => ['de-DE,de;q=0.9,en;q=0.8', 'fr'],
+            'Spanish' => ['es', 'fr'],
+            'no header' => ['', 'fr'],
+        ];
+    }
+
+    public function testTheChosenLanguageBeatsTheBrowser(): void
+    {
+        $this->get('/langue/fr', 'en-GB');
+
+        $this->assertStringContainsString('<html lang="fr">', $this->get('/', 'en-GB')->body);
+    }
+
     public function testTheHeaderHasLinksToBothLanguagesThatReturnToThePage(): void
     {
         $body = $this->get('/villes?q=lisb')->body;

@@ -28,12 +28,12 @@ abstract class AppTestCase extends TestCase
         $this->places = new FakePlaceFinder();
     }
 
-    protected function get(string $uri): Response
+    protected function get(string $uri, string $acceptLanguage = ''): Response
     {
         $query = [];
         parse_str((string) parse_url($uri, PHP_URL_QUERY), $query);
 
-        return $this->app()->handle(new Request('GET', $uri, $query));
+        return $this->app()->handle(new Request('GET', $uri, $query, acceptLanguage: $acceptLanguage));
     }
 
     /** Sends a form, with the session's CSRF token unless one is given. */

@@ -59,7 +59,7 @@ final class App
 
     public function handle(Request $request): Response
     {
-        Lang::set($this->session->get(Lang::SESSION_KEY));
+        Lang::set($this->session->get(Lang::SESSION_KEY) ?? Lang::fromBrowser($request->acceptLanguage));
         $this->view->share('currentUser', $this->auth->user());
         $this->view->share('csrfToken', $this->csrf->token());
         $this->view->share('currentPath', parse_url($request->uri, PHP_URL_PATH) ?: '/');

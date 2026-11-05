@@ -5,7 +5,7 @@
 
 ### 👉 [Try the live demo](https://puremax-lab.alwaysdata.net/escales)
 
-Log in with **camille** / **password** (other demo accounts: `malik`, `lena`, same password), or create your own account. The site is in French by default: click **EN** in the header for English.
+Log in with **camille** / **password** (other demo accounts: `malik`, `lena`, same password), or create your own account. The site opens in the language of your browser, French if it is neither French nor English: switch with **FR** / **EN** in the header.
 
 ![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)
 ![MySQL / SQLite](https://img.shields.io/badge/MySQL_%2F_SQLite-4479A1?logo=mysql&logoColor=white)
@@ -126,7 +126,7 @@ erDiagram
 
 ## Quality and stack
 
-- **83 PHPUnit tests**: unit tests for the router, validator, CSRF and sub-folder handling, and functional tests that send real requests through the whole app (sign-up, login, throttle, journal, world city search with a fake search service, permissions, escaping, language switch). One test reads the code and fails if a text has no English version.
+- **90 PHPUnit tests**: unit tests for the router, validator, CSRF and sub-folder handling, and functional tests that send real requests through the whole app (sign-up, login, throttle, journal, world city search with a fake search service, permissions, escaping, language switch). One test reads the code and fails if a text has no English version.
 - **GitHub Actions** runs the tests on PHP 8.3 and 8.4 at every push.
 
 **Stack:** PHP 8.3+ (no framework), MySQL or SQLite, HTML and CSS with no library and no JavaScript (100% server-rendered PHP), PHPUnit 12, GitHub Actions. Online on alwaysdata (SQLite), served from a sub-folder.

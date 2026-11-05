@@ -14,6 +14,7 @@ final class Request
         public readonly array $query = [],
         public readonly array $body = [],
         public readonly string $ip = '127.0.0.1',
+        public readonly string $acceptLanguage = '',
     ) {
     }
 
@@ -31,6 +32,7 @@ final class Request
             $_GET,
             $_POST,
             $_SERVER['REMOTE_ADDR'] ?? '',
+            $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',
         );
     }
 
