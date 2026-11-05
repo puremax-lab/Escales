@@ -44,7 +44,7 @@ The app itself is a shared travel journal: visitors search cities and read revie
 - **Database constraints**: foreign keys, unique keys (one entry per city per member), a `CHECK` on the rating, and journal entries deleted with their member.
 
 **An external API, without a library**
-- **Every city in the world**: the journal searches [Photon](https://photon.komoot.io), a geocoder built on OpenStreetMap data, with names in French ([`PhotonPlaceFinder`](src/Places/PhotonPlaceFinder.php)). A plain `file_get_contents` with a timeout, no SDK.
+- **Cities worldwide**: the journal searches [Photon](https://photon.komoot.io), a geocoder built on OpenStreetMap data, with names in French ([`PhotonPlaceFinder`](src/Places/PhotonPlaceFinder.php)). A plain `file_get_contents` with a timeout, no SDK.
 - **Trust nothing from the browser**: the form only sends the place reference; the server looks the city up again before saving it, so a made-up city is refused.
 - **No JavaScript**: in the sign-up and profile forms, "Chercher" sends the form again and lists the cities to tick, keeping what was typed.
 - **Saved on first use**: a city enters the database the first time a member notes it, with its country if it is new, and is shared by everyone after that.
@@ -53,7 +53,7 @@ The app itself is a shared travel journal: visitors search cities and read revie
 ## The app
 
 - **Cities**: search by city or country, filter by country, pagination (1, 2, 3… with previous / next, shortened when there are many pages), page per city with reviews and average rating
-- **Journal**: add any city in the world you have visited (search, pick, rate), edit and delete entries, with a date, a 1 to 5 star rating and a review
+- **Journal**: add a city from anywhere in the world you have visited (search, pick, rate), edit and delete entries, with a date, a 1 to 5 star rating and a review
 - **Members**: sign-up with a home city anywhere in the world, login, logout, public profile with statistics (cities, countries, average rating), profile editing
 - **Home page**: key figures, most visited cities, latest reviews
 - **French and English**: the interface, form errors, dates, the legal notice, and the demo countries, cities and reviews, following the language of the browser on a first visit, with English for any language other than French or English, and keeping the visitor's choice for the whole visit and after logging out. An English city name also works in the search (`brussels` finds Bruxelles)
