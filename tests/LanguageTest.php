@@ -37,8 +37,8 @@ final class LanguageTest extends AppTestCase
             'English' => ['en-GB,en;q=0.9', 'en'],
             'plain English' => ['en', 'en'],
             'French' => ['fr-BE,fr;q=0.9,en;q=0.8', 'fr'],
-            'German' => ['de-DE,de;q=0.9,en;q=0.8', 'fr'],
-            'Spanish' => ['es', 'fr'],
+            'German' => ['de-DE,de;q=0.9,en;q=0.8', 'en'],
+            'Spanish' => ['es', 'en'],
             'no header' => ['', 'fr'],
         ];
     }

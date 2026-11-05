@@ -5,7 +5,7 @@
 
 ### 👉 [Try the live demo](https://puremax-lab.alwaysdata.net/escales)
 
-Log in with **camille** / **password** (other demo accounts: `malik`, `lena`, same password), or create your own account. The site opens in the language of your browser, French if it is neither French nor English: switch with **FR** / **EN** in the header.
+Log in with **camille** / **password** (other demo accounts: `malik`, `lena`, same password), or create your own account. The site opens in the language of your browser, English if it is neither French nor English: switch with **FR** / **EN** in the header.
 
 ![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)
 ![MySQL / SQLite](https://img.shields.io/badge/MySQL_%2F_SQLite-4479A1?logo=mysql&logoColor=white)
